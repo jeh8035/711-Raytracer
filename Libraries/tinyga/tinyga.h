@@ -19,9 +19,9 @@
 #pragma pack(push, 1)
 typedef struct
 {
-    uint8_t r;
-    uint8_t g;
     uint8_t b;
+    uint8_t g;
+    uint8_t r;
 } TGAColor;
 #pragma pack(pop)
 
@@ -39,7 +39,7 @@ typedef enum
     TGA_ERR_FWRITE,
 } TGAErrorCode;
 
-#define TGACOLOR(_r, _g, _b) ((TGAColor){.r = _r, .g = _g, .b = _b})
+#define TGACOLOR(_r, _g, _b) ((TGAColor){.b = _b, .g = _g, .r = _r})
 
 const char *TGAError2Str(TGAErrorCode err);
 

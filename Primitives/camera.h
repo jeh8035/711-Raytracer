@@ -12,6 +12,8 @@ namespace Primitives {
 
         public:
             Camera(Point _position, Point _lookat);
+
+            Point GetPosition() {return position;};
     };
 
 }

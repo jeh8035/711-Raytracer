@@ -10,6 +10,9 @@ namespace Primitives {
             Direction direction;
         public:
             Ray(const Point& _position, const Direction& _direction);
+
+            Point GetPosition() {return position;}
+            Point GetDirection() {return direction;}
     };
 }
 

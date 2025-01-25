@@ -14,15 +14,19 @@ namespace Primitives {
     class Shape {
         public:
             virtual IntersectionInfo Intersect(const Ray& ray) const = 0;
+
+            void Translate(const Point& point);
+
+        protected:
+            Point position;
     };
 
     class Sphere : public Shape {
         private:
             float radius;
-            Point position;
 
         public:
-            Sphere(float _radius, Point _position);
+            Sphere(const float& _radius, const Point& _position);
             virtual IntersectionInfo Intersect(const Ray& ray) const;
     };
 
