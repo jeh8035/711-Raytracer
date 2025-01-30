@@ -14,17 +14,17 @@ int main() {
     TGA image = TGANew(width, height, TGACOLOR(0,0,0));
     
     // Define objects
-    Primitives::Camera camera = Primitives::Camera(Primitives::Point({1.9, 1.1, -3.0}), Primitives::Direction({1.0, 0.0, 0.0}));
+    Primitives::Camera camera = Primitives::Camera(Primitives::Point({1.1, 1.9, -3.0}), Primitives::Direction({0.0, 0.0, 1.0}));
     
     // Film plane in camera space
     Primitives::FilmPlane filmplane = Primitives::FilmPlane(
-        0.2,
-        100.0,
-        100.0 * aspect_ratio
+        1.0,
+        1.0,
+        1.0 * aspect_ratio
     );
 
-    Primitives::Sphere sphere1 = Primitives::Sphere(0.5, Primitives::Point({1.8f, 1.2f, 1.5f}));
-    Primitives::Sphere sphere2 = Primitives::Sphere(0.5, Primitives::Point({2.6f, 0.7f, 3.0f}));
+    Primitives::Sphere sphere1 = Primitives::Sphere(0.5, Primitives::Point({1.2f, 1.8f, 1.5f}));
+    Primitives::Sphere sphere2 = Primitives::Sphere(0.5, Primitives::Point({0.7f, 2.6f, 3.0f}));
 
     Primitives::Shape* shapes[] = { 
         &sphere1,
@@ -36,8 +36,8 @@ int main() {
         shape->Translate(-camera.GetPosition());
     }
 
-    for (int y = -height/2; y < height/2; y++) {
-        for (int x = -width/2; x < width/2; x++) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
             TGAColor color = TGACOLOR(0, 0, 0);
 
             // Cast ray
@@ -47,9 +47,9 @@ int main() {
 
             // TODO: change this based on camera rotation
             dir = Primitives::Direction({
-                // Pixel offset + offset to middle of pixel
-                (pixelWidth * x) + (pixelWidth / 2),
-                (pixelHeight * y) + (pixelHeight / 2),
+                // Pixel offset + offset to middle of pixel - offset to center film plane
+                (pixelWidth * x) + (pixelWidth / 2) - filmplane.GetWidth() / 2,
+                (pixelHeight * y) + (pixelHeight / 2) - filmplane.GetHeight() / 2,
                 filmplane.GetDist(),
             }).normalize();
 
@@ -65,7 +65,8 @@ int main() {
             }
 
             // Set pixel color
-            TGASetPixel(&image, x, y, color);
+            // Have to flip image since the library has (0,0) in the bottom right, rather than the top left.
+            TGASetPixel(&image, width - x, height - y, color);
         }
     }
 
