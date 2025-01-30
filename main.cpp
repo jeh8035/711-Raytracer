@@ -14,17 +14,17 @@ int main() {
     TGA image = TGANew(width, height, TGACOLOR(0,0,0));
     
     // Define objects
-    Primitives::Camera camera = Primitives::Camera(Primitives::Point({1.9, -3.0, 1.1}), Primitives::Direction({1.0, 0.0, 0.0}));
+    Primitives::Camera camera = Primitives::Camera(Primitives::Point({1.9, 1.1, -3.0}), Primitives::Direction({1.0, 0.0, 0.0}));
     
     // Film plane in camera space
     Primitives::FilmPlane filmplane = Primitives::FilmPlane(
-        Primitives::Point({2.0, 0.0, 0.0}),
-        2.0,
-        2.0 * aspect_ratio
+        0.2,
+        100.0,
+        100.0 * aspect_ratio
     );
 
-    Primitives::Sphere sphere1 = Primitives::Sphere(0.5, Primitives::Point({1.8f, 1.5f, 1.2f}));
-    Primitives::Sphere sphere2 = Primitives::Sphere(0.5, Primitives::Point({2.6f, 3.0f, 0.7f}));
+    Primitives::Sphere sphere1 = Primitives::Sphere(0.5, Primitives::Point({1.8f, 1.2f, 1.5f}));
+    Primitives::Sphere sphere2 = Primitives::Sphere(0.5, Primitives::Point({2.6f, 0.7f, 3.0f}));
 
     Primitives::Shape* shapes[] = { 
         &sphere1,
@@ -36,8 +36,8 @@ int main() {
         shape->Translate(-camera.GetPosition());
     }
 
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
+    for (int y = -height/2; y < height/2; y++) {
+        for (int x = -width/2; x < width/2; x++) {
             TGAColor color = TGACOLOR(0, 0, 0);
 
             // Cast ray
@@ -45,17 +45,24 @@ int main() {
             float pixelWidth = filmplane.GetWidth() / width;
             float pixelHeight = filmplane.GetHeight() / height;
 
+            // TODO: change this based on camera rotation
             dir = Primitives::Direction({
-                filmplane.GetPosition().x(),
-                // Pixel offset + offset to middle of pixel - offset to center plane
-                (pixelWidth * x) + (pixelWidth / 2) - (pixelWidth * width / 2),
-                (pixelHeight * y) + (pixelWidth / 2) - (pixelHeight * height / 2)
+                // Pixel offset + offset to middle of pixel
+                (pixelWidth * x) + (pixelWidth / 2),
+                (pixelHeight * y) + (pixelHeight / 2),
+                filmplane.GetDist(),
             }).normalize();
 
             Primitives::Ray ray = Primitives::Ray(
                 Primitives::Point({0, 0, 0}),
                 dir
             );
+
+            for (Primitives::Shape* shape : shapes) {
+                if (shape->Intersect(ray).hit) {
+                    color.b = 255;
+                }
+            }
 
             // Set pixel color
             TGASetPixel(&image, x, y, color);

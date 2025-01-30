@@ -8,7 +8,7 @@ namespace Primitives {
 
     // Information returned from a ray hit
     struct IntersectionInfo {
-
+        bool hit = false;
     };
 
     class Shape {

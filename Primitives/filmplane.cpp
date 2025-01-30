@@ -2,8 +2,8 @@
 
 namespace Primitives {
 
-    FilmPlane::FilmPlane(Point _position, float _height, float _width) {
-        position = _position;
+    FilmPlane::FilmPlane(float _dist, float _height, float _width) {
+        dist = _dist;
         height = _height;
         width = _width;
     }

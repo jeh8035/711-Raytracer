@@ -11,8 +11,8 @@ namespace Primitives {
         public:
             Ray(const Point& _position, const Direction& _direction);
 
-            Point GetPosition() {return position;}
-            Point GetDirection() {return direction;}
+            Point GetPosition() const {return position;}
+            Point GetDirection() const {return direction;}
     };
 }
 

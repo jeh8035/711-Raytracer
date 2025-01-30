@@ -7,14 +7,14 @@ namespace Primitives {
 
     class FilmPlane {
         private:
-            Point position;
+            float dist;
             float height;
             float width;
 
         public:
-            FilmPlane(Point _position, float _height, float _width);
+            FilmPlane(float _dist, float _height, float _width);
 
-            Point GetPosition() {return position;}
+            float GetDist() {return dist;}
             float GetWidth() {return width;}
             float GetHeight() {return height;}
     };
