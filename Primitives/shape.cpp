@@ -2,13 +2,13 @@
 
 namespace Primitives {
 
-    void Shape::Translate(const Point& point) {
-        position += point;
-    }
-
     Sphere::Sphere(const float& _radius, const Point& _position) {
         radius = _radius;
         position = _position;
+    }
+
+    void Sphere::Translate(const Point& point) {
+        position += point;
     }
 
     // Sphere-ray intersection
@@ -28,6 +28,7 @@ namespace Primitives {
 
         if (innerQuadratic >= 0) {
             result.hit = true;
+            result.color.r = 255;
         }
 
         //float solution1 = (-B + innerQuadratic) / 2;
@@ -35,4 +36,49 @@ namespace Primitives {
 
         return result;
     }
+
+    Triangle::Triangle(const Point& _vert1, const Point& _vert2, const Point& _vert3) {
+        vert1 = _vert1;
+        vert2 = _vert2;
+        vert3 = _vert3;
+    }
+
+    IntersectionInfo Triangle::Intersect(const Ray& ray) const {
+        IntersectionInfo result = IntersectionInfo();
+
+        // Vectors representing triangle
+        algebra::Vector3f e1 = vert2 - vert1;
+        algebra::Vector3f e2 = vert3 - vert1;
+
+        algebra::Vector3f t = ray.GetPosition() - vert1;
+        algebra::Vector3f p;
+        ray.GetDirection().cross(e2, p); // cross product
+
+        algebra::Vector3f q;
+        t.cross(e1, q); //cross product
+
+        // Barycentric coordinates
+        algebra::Vector3f vec = algebra::Vector3f({
+            q * e2,
+            p * t,
+            q * ray.GetDirection()
+        });
+
+        algebra::Vector3f wuv = vec * (1.0 / (p * e1));
+
+        if (wuv.x() < 0 || wuv.y() < 0 || wuv.z() < 0 || wuv.y() + wuv.z() > 1.0 ) {
+            result.hit = false;
+        } else {
+            result.hit = true;
+            result.color = TGACOLOR(0, 255, 0);
+        }
+        return result;
+    }
+        
+    void Triangle::Translate(const Point& point) {
+        vert1 += point;
+        vert2 += point;
+        vert3 += point;
+    }
+
 }

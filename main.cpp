@@ -13,22 +13,37 @@ int main() {
     // Create image
     TGA image = TGANew(width, height, TGACOLOR(0,0,0));
     
-    // Define objects
+    // Create camera
     Primitives::Camera camera = Primitives::Camera(Primitives::Point({1.1, 1.9, -3.0}), Primitives::Direction({0.0, 0.0, 1.0}));
     
-    // Film plane in camera space
+    // Create film plane
     Primitives::FilmPlane filmplane = Primitives::FilmPlane(
         1.0,
-        1.0,
-        1.0 * aspect_ratio
+        0.7,
+        0.7 * aspect_ratio
     );
 
-    Primitives::Sphere sphere1 = Primitives::Sphere(0.5, Primitives::Point({1.2f, 1.8f, 1.5f}));
-    Primitives::Sphere sphere2 = Primitives::Sphere(0.5, Primitives::Point({0.7f, 2.6f, 3.0f}));
+    // Define objects
+    Primitives::Sphere sphere1 = Primitives::Sphere(0.5, Primitives::Point({1.4f, 1.8f, 3.0f}));
+    Primitives::Sphere sphere2 = Primitives::Sphere(0.5, Primitives::Point({1.0f, 2.4f, 1.5f}));
+
+    Primitives::Triangle triangle1 = Primitives::Triangle(
+        Primitives::Point({2.5, 0.0, 0.0}),
+        Primitives::Point({0.0, 0.0, 8.5}),
+        Primitives::Point({0.0, 0.0, 0.0})
+    );
+
+    Primitives::Triangle triangle2 = Primitives::Triangle(
+        Primitives::Point({2.5, 0.0, 0.0}),
+        Primitives::Point({2.5, 0.0, 8.5}),
+        Primitives::Point({0.0, 0.0, 8.5})
+    );
 
     Primitives::Shape* shapes[] = { 
         &sphere1,
         &sphere2,
+        &triangle1,
+        &triangle2
     };
 
     // Transform objects to camera space
@@ -42,6 +57,8 @@ int main() {
 
             // Cast ray
             Primitives::Direction dir = Primitives::Direction();
+            
+            // Pixel size in world units
             float pixelWidth = filmplane.GetWidth() / width;
             float pixelHeight = filmplane.GetHeight() / height;
 
@@ -59,14 +76,14 @@ int main() {
             );
 
             for (Primitives::Shape* shape : shapes) {
-                if (shape->Intersect(ray).hit) {
-                    color.b = 255;
+                Primitives::IntersectionInfo intersection = shape->Intersect(ray);
+                if (intersection.hit) {
+                    color = intersection.color;
                 }
             }
 
             // Set pixel color
-            // Have to flip image since the library has (0,0) in the bottom right, rather than the top left.
-            TGASetPixel(&image, width - x, height - y, color);
+            TGASetPixel(&image, x, y, color);
         }
     }
 

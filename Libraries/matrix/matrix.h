@@ -585,6 +585,16 @@ namespace algebra {
 			return std::inner_product(begin(), end(), vec.begin(), T{});
 		}
 
+		void cross(const Matrix& vec, Matrix& vec2) const requires (vector_dimensions<m, n> || is_dynamic) {
+			if constexpr (is_dynamic) {
+				MATRIX_VERIFY(is_vector() && vec.is_vector(), "Matrix::cross() is only supported for vectors, not matrices", Matrix_shape_error);
+			}
+			vec2[0] = y() * vec.z() - z() * vec.y();
+			vec2[1] = z() * vec.x() - x() * vec.z();
+			vec2[2] = x() * vec.y() - y() * vec.x();
+		}
+
+
 		constexpr T operator*(const Matrix& vec) const requires vector_dimensions<m, n>{
 			return (*this).dot(vec);
 		}
