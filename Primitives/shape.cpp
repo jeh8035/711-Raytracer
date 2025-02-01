@@ -2,13 +2,19 @@
 
 namespace Primitives {
 
-    Sphere::Sphere(const float& _radius, const Point& _position) {
+    Sphere::Sphere(const TGAColor& _material, const float& _radius, const Point& _position) {
+        material = _material;
         radius = _radius;
         position = _position;
     }
 
-    void Sphere::Translate(const Point& point) {
-        position += point;
+    void Sphere::Transform(const algebra::Matrix4f& matrix) {
+        algebra::Vector4f new_position = matrix * algebra::Vector4f({position.x(), position.y(), position.z(), 1.0f});
+        position = algebra::Vector3f({
+            new_position.x(),
+            new_position.y(),
+            new_position.z()
+        });
     }
 
     // Sphere-ray intersection
@@ -28,16 +34,19 @@ namespace Primitives {
 
         if (innerQuadratic >= 0) {
             result.hit = true;
-            result.color.r = 255;
-        }
+            result.color = material;
 
-        //float solution1 = (-B + innerQuadratic) / 2;
-        //float solution2 = (-B - innerQuadratic) / 2;
+            result.rayDist = std::min(
+                -B + sqrt(innerQuadratic) / 2,
+                -B - sqrt(innerQuadratic) / 2
+            );
+        }
 
         return result;
     }
 
-    Triangle::Triangle(const Point& _vert1, const Point& _vert2, const Point& _vert3) {
+    Triangle::Triangle(const TGAColor& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) {
+        material = _material;
         vert1 = _vert1;
         vert2 = _vert2;
         vert3 = _vert3;
@@ -70,15 +79,27 @@ namespace Primitives {
             result.hit = false;
         } else {
             result.hit = true;
-            result.color = TGACOLOR(0, 255, 0);
+            result.color = material;
+            result.rayDist = wuv.x();
         }
         return result;
     }
         
-    void Triangle::Translate(const Point& point) {
-        vert1 += point;
-        vert2 += point;
-        vert3 += point;
+    void Triangle::Transform(const algebra::Matrix4f& matrix) {
+        algebra::Vector4f new_position1 = matrix * algebra::Vector4f({
+            vert1.x(), vert1.y(), vert1.z(), 1.0f
+        });
+        algebra::Vector4f new_position2 = matrix * algebra::Vector4f({
+            vert2.x(), vert2.y(), vert2.z(), 1.0f
+        });
+        algebra::Vector4f new_position3 = matrix * algebra::Vector4f({
+            vert3.x(), vert3.y(), vert3.z(), 1.0f
+        });
+
+
+        vert1 = algebra::Vector3f({new_position1.x(), new_position1.y(), new_position1.z()});
+        vert2 = algebra::Vector3f({new_position2.x(), new_position2.y(), new_position2.z()});;
+        vert3 = algebra::Vector3f({new_position3.x(), new_position3.y(), new_position3.z()});;
     }
 
 }

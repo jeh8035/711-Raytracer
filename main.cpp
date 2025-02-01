@@ -24,16 +24,18 @@ int main() {
     );
 
     // Define objects
-    Primitives::Sphere sphere1 = Primitives::Sphere(0.5, Primitives::Point({1.4f, 1.8f, 3.0f}));
-    Primitives::Sphere sphere2 = Primitives::Sphere(0.5, Primitives::Point({1.0f, 2.4f, 1.5f}));
+    Primitives::Sphere sphere1 = Primitives::Sphere(TGACOLOR(0, 255, 0), 0.5, Primitives::Point({1.4f, 1.8f, 3.0f}));
+    Primitives::Sphere sphere2 = Primitives::Sphere(TGACOLOR(255, 0, 0),0.5, Primitives::Point({1.0f, 2.4f, 1.5f}));
 
     Primitives::Triangle triangle1 = Primitives::Triangle(
+        TGACOLOR(0, 0, 255),
         Primitives::Point({2.5, 0.0, 0.0}),
         Primitives::Point({0.0, 0.0, 8.5}),
         Primitives::Point({0.0, 0.0, 0.0})
     );
 
     Primitives::Triangle triangle2 = Primitives::Triangle(
+        TGACOLOR(0, 0, 255),
         Primitives::Point({2.5, 0.0, 0.0}),
         Primitives::Point({2.5, 0.0, 8.5}),
         Primitives::Point({0.0, 0.0, 8.5})
@@ -48,7 +50,15 @@ int main() {
 
     // Transform objects to camera space
     for (auto shape : shapes) {
-        shape->Translate(-camera.GetPosition());
+        
+        shape->Transform(
+            algebra::Matrix4f({
+                1.0, 0.0, 0.0, -camera.GetPosition().x(),
+                0.0, 1.0, 0.0, -camera.GetPosition().y(),
+                0.0, 0.0, 1.0, -camera.GetPosition().z(),
+                0.0, 0.0, 0.0, 0.0
+            })
+        );
     }
 
     for (int y = 0; y < height; y++) {
@@ -75,9 +85,11 @@ int main() {
                 dir
             );
 
+            float currentMinDist = std::numeric_limits<float>().max();
             for (Primitives::Shape* shape : shapes) {
                 Primitives::IntersectionInfo intersection = shape->Intersect(ray);
-                if (intersection.hit) {
+                if (intersection.hit && intersection.rayDist < currentMinDist) {
+                    currentMinDist = intersection.rayDist;
                     color = intersection.color;
                 }
             }

@@ -11,13 +11,15 @@ namespace Primitives {
     struct IntersectionInfo {
         bool hit = false;
         TGAColor color = TGACOLOR(0, 0, 0);
+        float rayDist = 0.0f;
     };
 
     class Shape {
         public:
             virtual IntersectionInfo Intersect(const Ray& ray) const = 0;
-
-            virtual void Translate(const Point& point) = 0;
+            virtual void Transform(const algebra::Matrix4f& matrix) = 0;
+        protected:
+            TGAColor material;
     };
 
     class Sphere : public Shape {
@@ -26,10 +28,10 @@ namespace Primitives {
             float radius;
 
         public:
-            Sphere(const float& _radius, const Point& _position);
+            Sphere(const TGAColor& _material, const float& _radius, const Point& _position);
 
             virtual IntersectionInfo Intersect(const Ray& ray) const;
-            virtual void Translate(const Point& point);
+            virtual void Transform(const algebra::Matrix4f& matrix);
     };
 
 
@@ -40,9 +42,9 @@ namespace Primitives {
             Point vert3;
 
         public:
-            Triangle(const Point& _vert1, const Point& _vert2, const Point& _vert3);
+            Triangle(const TGAColor& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3);
             virtual IntersectionInfo Intersect(const Ray& ray) const;
-            virtual void Translate(const Point& point);
+            virtual void Transform(const algebra::Matrix4f& matrix);
     };
 
 }
