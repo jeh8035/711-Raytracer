@@ -14,6 +14,9 @@ namespace Primitives {
             Camera(Point _position, Point _lookat);
 
             Point GetPosition() {return position;};
+            Point GetLookAt() {return lookat;};
+
+            algebra::Vector3f LookAtToAngles();
     };
 
 }
