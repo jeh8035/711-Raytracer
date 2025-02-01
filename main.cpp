@@ -56,7 +56,7 @@ int main() {
                 1.0, 0.0, 0.0, -camera.GetPosition().x(),
                 0.0, 1.0, 0.0, -camera.GetPosition().y(),
                 0.0, 0.0, 1.0, -camera.GetPosition().z(),
-                0.0, 0.0, 0.0, 0.0
+                0.0, 0.0, 0.0, 1.0
             })
         );
     }

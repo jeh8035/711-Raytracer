@@ -9,12 +9,7 @@ namespace Primitives {
     }
 
     void Sphere::Transform(const algebra::Matrix4f& matrix) {
-        algebra::Vector4f new_position = matrix * algebra::Vector4f({position.x(), position.y(), position.z(), 1.0f});
-        position = algebra::Vector3f({
-            new_position.x(),
-            new_position.y(),
-            new_position.z()
-        });
+        position = matrix * position;
     }
 
     // Sphere-ray intersection
@@ -86,20 +81,9 @@ namespace Primitives {
     }
         
     void Triangle::Transform(const algebra::Matrix4f& matrix) {
-        algebra::Vector4f new_position1 = matrix * algebra::Vector4f({
-            vert1.x(), vert1.y(), vert1.z(), 1.0f
-        });
-        algebra::Vector4f new_position2 = matrix * algebra::Vector4f({
-            vert2.x(), vert2.y(), vert2.z(), 1.0f
-        });
-        algebra::Vector4f new_position3 = matrix * algebra::Vector4f({
-            vert3.x(), vert3.y(), vert3.z(), 1.0f
-        });
-
-
-        vert1 = algebra::Vector3f({new_position1.x(), new_position1.y(), new_position1.z()});
-        vert2 = algebra::Vector3f({new_position2.x(), new_position2.y(), new_position2.z()});;
-        vert3 = algebra::Vector3f({new_position3.x(), new_position3.y(), new_position3.z()});;
+        vert1 = matrix * vert1;
+        vert2 = matrix * vert2;
+        vert3 = matrix * vert3;
     }
 
 }
