@@ -8,6 +8,7 @@ namespace Primitives {
         position = _position;
     }
 
+#pragma region Sphere
     void Sphere::Transform(const algebra::Matrix4f& matrix) {
         position = matrix * position;
     }
@@ -39,7 +40,9 @@ namespace Primitives {
 
         return result;
     }
+#pragma endregion
 
+#pragma region Triangle
     Triangle::Triangle(const TGAColor& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) {
         material = _material;
         vert1 = _vert1;
@@ -85,5 +88,6 @@ namespace Primitives {
         vert2 = matrix * vert2;
         vert3 = matrix * vert3;
     }
+#pragma endregion
 
 }

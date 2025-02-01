@@ -3,7 +3,6 @@
 
 #include "Primitives/shape.h"
 #include "Primitives/camera.h"
-#include "Primitives/filmplane.h"
 
 int main() {
     const unsigned int width = 256;
@@ -14,18 +13,25 @@ int main() {
     TGA image = TGANew(width, height, TGACOLOR(0,0,0));
     
     // Create camera
-    Primitives::Camera camera = Primitives::Camera(Primitives::Point({1.1f, 1.9f, -3.0f}), Primitives::Direction({0.0f, 0.0f, 1.0f}));
-    
-    // Create film plane
-    Primitives::FilmPlane filmplane = Primitives::FilmPlane(
-        1.0f,
+    Primitives::Camera camera = Primitives::Camera(
+        Primitives::Point({1.1f, 1.9f, -3.0f}),
+        Primitives::Direction({0.0f, 0.0f, 1.0f}),
         0.7f,
-        0.7f * aspect_ratio
+        0.7f * aspect_ratio,
+        1.0f
     );
 
     // Define objects
-    Primitives::Sphere sphere1 = Primitives::Sphere(TGACOLOR(0, 255, 0), 0.5f, Primitives::Point({1.4f, 1.8f, 3.0f}));
-    Primitives::Sphere sphere2 = Primitives::Sphere(TGACOLOR(255, 0, 0), 0.5f, Primitives::Point({1.0f, 2.4f, 1.5f}));
+    Primitives::Sphere sphere1 = Primitives::Sphere(
+        TGACOLOR(0, 255, 0),
+        0.5f,
+        Primitives::Point({1.4f, 1.8f, 3.0f})
+    );
+    Primitives::Sphere sphere2 = Primitives::Sphere(
+        TGACOLOR(255, 0, 0),
+        0.5f,
+        Primitives::Point({1.0f, 2.4f, 1.5f})
+    );
 
     Primitives::Triangle triangle1 = Primitives::Triangle(
         TGACOLOR(0, 0, 255),
@@ -48,49 +54,28 @@ int main() {
         &triangle2
     };
 
-    {
-        // Transform objects to camera space
-        algebra::Vector3f rot = camera.LookAtToAngles();
-
-        algebra::Matrix4f rot_matrix = algebra::Matrix4f({
-            std::cosf(rot.y()) * std::cosf(rot.z()), std::sinf(rot.x()) * std::sinf(rot.y()) * std::cosf(rot.z()) - std::cosf(rot.x()) * std::sinf(rot.z()), std::cosf(rot.x()) * std::sinf(rot.y()) * std::cosf(rot.z()) + std::sinf(rot.x()) * std::sinf(rot.z()), 0.0f,
-            std::cosf(rot.y()) * std::sinf(rot.z()), std::sinf(rot.x()) * std::sinf(rot.y()) * std::sinf(rot.z()) + std::cosf(rot.x()) * std::cosf(rot.z()), std::cosf(rot.x()) * std::sinf(rot.y()) * std::sinf(rot.z()) - std::sinf(rot.x()) * std::cosf(rot.z()), 0.0f,
-            -std::sinf(rot.y()),                     std::sinf(rot.x()) * std::cos(rot.y()),                                                                 std::cosf(rot.x()) * std::cosf(rot.y()),                                                                0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        });
-
-        algebra::Matrix4f translation_matrix = algebra::Matrix4f({
-            1.0f, 0.0f, 0.0f, -camera.GetPosition().x(),
-            0.0f, 1.0f, 0.0f, -camera.GetPosition().y(),
-            0.0f, 0.0f, 1.0f, -camera.GetPosition().z(),
-            0.0f, 0.0f, 0.0f, 1.0f
-        });
-
-
-        for (auto shape : shapes) {
-            shape->Transform(
-                rot_matrix * translation_matrix
-            );
-        }
+    // Transform objects to camera space
+    for (auto shape : shapes) {
+        shape->Transform(camera.GetViewMatrix());
     }
 
+    // Cast rays
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             TGAColor color = TGACOLOR(0, 0, 0);
 
-            // Cast ray
             Primitives::Direction dir = Primitives::Direction();
             
             // Pixel size in world units
-            float pixelWidth = filmplane.GetWidth() / width;
-            float pixelHeight = filmplane.GetHeight() / height;
+            float pixelWidth = camera.GetFilmplaneWidth() / width;
+            float pixelHeight = camera.GetFilmplaneHeight() / height;
 
             // TODO: change this based on camera rotation
             dir = Primitives::Direction({
                 // Pixel offset + offset to middle of pixel - offset to center film plane
-                (pixelWidth * x) + (pixelWidth / 2) - filmplane.GetWidth() / 2,
-                (pixelHeight * y) + (pixelHeight / 2) - filmplane.GetHeight() / 2,
-                filmplane.GetDist(),
+                (pixelWidth * x) + (pixelWidth / 2) - camera.GetFilmplaneWidth() / 2,
+                (pixelHeight * y) + (pixelHeight / 2) - camera.GetFilmplaneHeight() / 2,
+                camera.GetFilmplaneDist(),
             }).normalize();
 
             Primitives::Ray ray = Primitives::Ray(
@@ -98,6 +83,7 @@ int main() {
                 dir
             );
 
+            // Intersect objects
             float currentMinDist = std::numeric_limits<float>().max();
             for (Primitives::Shape* shape : shapes) {
                 Primitives::IntersectionInfo intersection = shape->Intersect(ray);

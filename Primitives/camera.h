@@ -10,13 +10,18 @@ namespace Primitives {
             Point position;
             Direction lookat;
 
+            float filmplane_width;
+            float filmplane_height;
+            float filmplane_dist;
+
         public:
-            Camera(Point _position, Point _lookat);
+            Camera(Point _position, Point _lookat, float _filmplane_width, float _filmplane_height, float _filmplane_dist);
 
-            Point GetPosition() {return position;};
-            Point GetLookAt() {return lookat;};
+            float GetFilmplaneWidth() {return filmplane_width;}
+            float GetFilmplaneHeight() {return filmplane_height;}
+            float GetFilmplaneDist() {return filmplane_dist;}
 
-            algebra::Vector3f LookAtToAngles();
+            algebra::Matrix4f GetViewMatrix();
     };
 
 }

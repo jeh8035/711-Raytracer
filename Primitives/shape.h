@@ -6,7 +6,7 @@
 #include "../Libraries/tinyga/tinyga.h"
 
 namespace Primitives {
-
+    
     // Information returned from a ray hit
     struct IntersectionInfo {
         bool hit = false;
@@ -34,7 +34,6 @@ namespace Primitives {
             virtual void Transform(const algebra::Matrix4f& matrix);
     };
 
-
     class Triangle : public Shape {
         private:
             Point vert1;
@@ -46,7 +45,6 @@ namespace Primitives {
             virtual IntersectionInfo Intersect(const Ray& ray) const;
             virtual void Transform(const algebra::Matrix4f& matrix);
     };
-
 }
 
 #endif
