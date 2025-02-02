@@ -32,8 +32,8 @@ namespace Primitives {
             result.color = material;
 
             result.rayDist = std::min(
-                -B + sqrt(innerQuadratic) / 2,
-                -B - sqrt(innerQuadratic) / 2
+                (-B + sqrt(innerQuadratic)) / 2,
+                (-B - sqrt(innerQuadratic)) / 2
             );
         }
 
@@ -102,20 +102,41 @@ namespace Primitives {
 
         algebra::Vector3f n_cross_a = ray.GetDirection().cross(axis);
 
-        float inner_quadratic = n_cross_a.dot(n_cross_a * powf(radius, 2.0f) ) - 
+        float innerQuadratic = n_cross_a.dot(n_cross_a) * powf(radius, 2.0f) - 
             powf(endpoint1 * n_cross_a, 2.0f);
 
-        if (inner_quadratic >= 0.0f) {
-            float d1 = (axis * endpoint1) / (axis * ray.GetDirection());
-            bool case1 = (ray.GetDirection() * d1 - endpoint1).norm_squared() < pow(radius, 2.0f);
 
-            float d2 = (axis * endpoint2) / (axis * ray.GetDirection());
-            bool case2 = (ray.GetDirection() * d2 - endpoint2).norm_squared() < pow(radius, 2.0f);
+        if (innerQuadratic >= 0.0f) {
+            float d = std::min(
+                ((n_cross_a * endpoint1.cross(axis)) + std::sqrt(innerQuadratic)) / (n_cross_a * n_cross_a),
+                ((n_cross_a * endpoint1.cross(axis)) - std::sqrt(innerQuadratic)) / (n_cross_a * n_cross_a)
+            );
 
-            if (case1 || case2){
+            float length = (endpoint2 - endpoint1).norm();
+            float t = axis * (ray.GetDirection() * d - endpoint1);
+
+            if (t >= 0.0f && t <= length) {
                 result.hit = true;
+                result.rayDist = d;
                 result.color = material;
-                result.color.r *= 0.5f;
+            }
+
+            // End caps
+            {
+                float d1 = (axis * endpoint1) / (axis * ray.GetDirection());
+                bool case1 = (ray.GetDirection() * d1 - endpoint1).norm_squared() < pow(radius, 2.0f);
+                case1 = case1 && (!result.hit || d1 < d);
+
+                float d2 = (axis * endpoint2) / (axis * ray.GetDirection());
+                bool case2 = (ray.GetDirection() * d2 - endpoint2).norm_squared() < pow(radius, 2.0f);
+                case2 = case2 && (!result.hit || d2 < d);
+
+                if (case1 || case2){
+                    result.hit = true;
+                    if (case1 && case2) result.rayDist = std::min(d1, d2);
+                    else result.rayDist = case1 ? d1 : d2;
+                    result.color = material;
+                }
             }
 
         }

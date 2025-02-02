@@ -48,15 +48,15 @@ int main() {
     );
 
     Primitives::Cylinder cylinder = Primitives::Cylinder(
-        TGACOLOR(255, 0, 0),
-        Primitives::Point({1.5f, 2.4f, 1.5f}),
-        Primitives::Point({1.0f, 2.4f, 2.5f}),
+        TGACOLOR(128, 0, 128),
+        Primitives::Point({-0.5f, 2.4f, 2.5f}),
+        Primitives::Point({0.7f, 2.4f, 4.0f}),
         0.3f
     );
 
     Primitives::Shape* shapes[] = { 
-        // &sphere1,
-        // &sphere2,
+        &sphere1,
+        &sphere2,
         &triangle1,
         &triangle2,
         &cylinder,
