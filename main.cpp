@@ -5,20 +5,20 @@
 #include "Primitives/camera.h"
 
 int main() {
-    const unsigned int width = 256;
-    const unsigned int height = 256;
-    constexpr float aspect_ratio = width/height;
+    const unsigned int width = 1920;
+    const unsigned int height = 1080;
+    constexpr float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
 
     // Create image
     TGA image = TGANew(width, height, TGACOLOR(0,0,0));
     
     // Create camera
     Primitives::Camera camera = Primitives::Camera(
-        Primitives::Point({1.1f, 1.9f, -3.0f}),
+        Primitives::Point({1.1f, 1.9f, -5.0f}),
         Primitives::Direction({0.0f, 0.0f, 1.0f}),
-        0.7f,
-        0.7f * aspect_ratio,
-        1.0f
+        0.15f,
+        0.15f * aspect_ratio,
+        0.2f
     );
 
     // Define objects
@@ -47,11 +47,19 @@ int main() {
         Primitives::Point({0.0, 0.0, 8.5})
     );
 
+    Primitives::Cylinder cylinder = Primitives::Cylinder(
+        TGACOLOR(255, 0, 0),
+        Primitives::Point({1.5f, 2.4f, 1.5f}),
+        Primitives::Point({1.0f, 2.4f, 2.5f}),
+        0.3f
+    );
+
     Primitives::Shape* shapes[] = { 
-        &sphere1,
-        &sphere2,
+        // &sphere1,
+        // &sphere2,
         &triangle1,
-        &triangle2
+        &triangle2,
+        &cylinder,
     };
 
     // Transform objects to camera space

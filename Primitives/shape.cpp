@@ -2,18 +2,17 @@
 
 namespace Primitives {
 
+#pragma region Sphere
     Sphere::Sphere(const TGAColor& _material, const float& _radius, const Point& _position) {
         material = _material;
         radius = _radius;
         position = _position;
     }
 
-#pragma region Sphere
     void Sphere::Transform(const algebra::Matrix4f& matrix) {
         position = matrix * position;
     }
 
-    // Sphere-ray intersection
     IntersectionInfo Sphere::Intersect(const Ray& ray) const {
         IntersectionInfo result = IntersectionInfo();
 
@@ -58,11 +57,9 @@ namespace Primitives {
         algebra::Vector3f e2 = vert3 - vert1;
 
         algebra::Vector3f t = ray.GetPosition() - vert1;
-        algebra::Vector3f p;
-        ray.GetDirection().cross(e2, p); // cross product
+        algebra::Vector3f p = ray.GetDirection().cross(e2); // cross product
 
-        algebra::Vector3f q;
-        t.cross(e1, q); //cross product
+        algebra::Vector3f q = t.cross(e1); //cross product
 
         // Barycentric coordinates
         algebra::Vector3f vec = algebra::Vector3f({
@@ -87,6 +84,48 @@ namespace Primitives {
         vert1 = matrix * vert1;
         vert2 = matrix * vert2;
         vert3 = matrix * vert3;
+    }
+#pragma endregion
+
+#pragma region Cylinder
+    Cylinder::Cylinder(const TGAColor& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) {
+        material = _material;
+        endpoint1 = _endpoint1;
+        endpoint2 = _endpoint2;
+        radius = _radius;
+    }
+
+    IntersectionInfo Cylinder::Intersect(const Ray& ray) const {
+        IntersectionInfo result = IntersectionInfo();
+
+        algebra::Vector3f axis = (endpoint2 - endpoint1).normalize();
+
+        algebra::Vector3f n_cross_a = ray.GetDirection().cross(axis);
+
+        float inner_quadratic = n_cross_a.dot(n_cross_a * powf(radius, 2.0f) ) - 
+            powf(endpoint1 * n_cross_a, 2.0f);
+
+        if (inner_quadratic >= 0.0f) {
+            float d1 = (axis * endpoint1) / (axis * ray.GetDirection());
+            bool case1 = (ray.GetDirection() * d1 - endpoint1).norm_squared() < pow(radius, 2.0f);
+
+            float d2 = (axis * endpoint2) / (axis * ray.GetDirection());
+            bool case2 = (ray.GetDirection() * d2 - endpoint2).norm_squared() < pow(radius, 2.0f);
+
+            if (case1 || case2){
+                result.hit = true;
+                result.color = material;
+                result.color.r *= 0.5f;
+            }
+
+        }
+
+        return result;
+    }
+
+    void Cylinder::Transform(const algebra::Matrix4f& matrix) {
+        endpoint1 = matrix * endpoint1;
+        endpoint2 = matrix * endpoint2;
     }
 #pragma endregion
 

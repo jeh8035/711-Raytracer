@@ -45,6 +45,19 @@ namespace Primitives {
             virtual IntersectionInfo Intersect(const Ray& ray) const;
             virtual void Transform(const algebra::Matrix4f& matrix);
     };
+
+    class Cylinder : public Shape {
+        private:
+            Point endpoint1;
+            Point endpoint2;
+            float radius;
+
+        public:
+            Cylinder(const TGAColor& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius);
+
+            virtual IntersectionInfo Intersect(const Ray& ray) const;
+            virtual void Transform(const algebra::Matrix4f& matrix);
+    };
 }
 
 #endif

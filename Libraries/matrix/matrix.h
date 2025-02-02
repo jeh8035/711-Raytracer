@@ -571,6 +571,15 @@ namespace algebra {
 			return std::sqrt(inner_product);
 		}
 
+		T norm_squared() const requires (vector_dimensions<m, n> || is_dynamic) {
+			if constexpr (is_dynamic) {
+				MATRIX_VERIFY(is_vector(), "Matrix::norm_squared() is only supported for vectors, not matrices", Matrix_shape_error);
+			}
+			T inner_product{};
+			std::for_each(begin(), end(), [&inner_product](const auto& value) { inner_product += value * value; });
+			return inner_product;
+		}
+
 		Matrix& normalize() requires (vector_dimensions<m, n> || is_dynamic) {
 			if constexpr (is_dynamic) {
 				MATRIX_VERIFY(is_vector(), "Matrix::normalize() is only supported for vectors, not matrices", Matrix_shape_error);
@@ -585,13 +594,15 @@ namespace algebra {
 			return std::inner_product(begin(), end(), vec.begin(), T{});
 		}
 
-		void cross(const Matrix& vec, Matrix& vec2) const requires (vector_dimensions<m, n> || is_dynamic) {
+		Matrix cross(const Matrix& vec) const requires (vector_dimensions<3, 1> || is_dynamic) {
 			if constexpr (is_dynamic) {
 				MATRIX_VERIFY(is_vector() && vec.is_vector(), "Matrix::cross() is only supported for vectors, not matrices", Matrix_shape_error);
 			}
-			vec2[0] = y() * vec.z() - z() * vec.y();
-			vec2[1] = z() * vec.x() - x() * vec.z();
-			vec2[2] = x() * vec.y() - y() * vec.x();
+			Matrix<T, m, n> mat;
+			mat[0] = y() * vec.z() - z() * vec.y();
+			mat[1] = z() * vec.x() - x() * vec.z();
+			mat[2] = x() * vec.y() - y() * vec.x();
+			return mat;
 		}
 
 
