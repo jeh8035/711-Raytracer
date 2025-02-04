@@ -5,8 +5,8 @@
 #include "Primitives/camera.h"
 
 int main() {
-    const unsigned int width = 1920;
-    const unsigned int height = 1080;
+    constexpr uint32_t width = 1920;
+    constexpr uint32_t height = 1080;
     constexpr float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
 
     // Create image
@@ -68,8 +68,8 @@ int main() {
     }
 
     // Cast rays
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
+    for (uint32_t y = 0; y < height; y++) {
+        for (uint32_t x = 0; x < width; x++) {
             TGAColor color = TGACOLOR(0, 0, 0);
 
             Primitives::Direction dir = Primitives::Direction();
