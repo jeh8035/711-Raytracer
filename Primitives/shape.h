@@ -12,6 +12,7 @@ namespace Primitives {
         bool hit = false;
         TGAColor color = TGACOLOR(0, 0, 0);
         float rayDist = 0.0f;
+        Direction normal;
     };
 
     class Shape {

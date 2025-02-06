@@ -35,6 +35,9 @@ namespace Primitives {
                 (-B + sqrt(innerQuadratic)) / 2,
                 (-B - sqrt(innerQuadratic)) / 2
             );
+
+            auto intersect_position = ray.GetDirection() * result.rayDist;
+            result.normal = (intersect_position - position).normalize();
         }
 
         return result;
@@ -76,6 +79,7 @@ namespace Primitives {
             result.hit = true;
             result.color = material;
             result.rayDist = wuv.x();
+            result.normal = -e1.cross(e2).normalize();
         }
         return result;
     }
@@ -121,6 +125,8 @@ namespace Primitives {
                 result.color = material;
             }
 
+            result.normal = (ray.GetDirection() * d - axis * t - endpoint1).normalize();
+
             // End caps
             {
                 float d1 = (axis * endpoint1) / (axis * ray.GetDirection());
@@ -136,6 +142,8 @@ namespace Primitives {
                     if (case1 && case2) result.rayDist = std::min(d1, d2);
                     else result.rayDist = case1 ? d1 : d2;
                     result.color = material;
+
+                    result.normal = t < length/2.0f ? -axis : axis;
                 }
             }
 
