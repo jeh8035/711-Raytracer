@@ -35,22 +35,22 @@ int main() {
 
     Primitives::Triangle triangle1 = Primitives::Triangle(
         TGACOLOR(0, 0, 255),
-        Primitives::Point({2.5f, 0.0f, 0.0f}),
-        Primitives::Point({0.0f, 0.0f, 8.5f}),
+        Primitives::Point({4.5f, 0.0f, 0.0f}),
+        Primitives::Point({0.0f, 0.0f, 11.5f}),
         Primitives::Point({0.0f, 0.0f, 0.0f})
     );
 
     Primitives::Triangle triangle2 = Primitives::Triangle(
         TGACOLOR(0, 0, 255),
-        Primitives::Point({2.5, 0.0, 0.0}),
-        Primitives::Point({2.5, 0.0, 8.5}),
-        Primitives::Point({0.0, 0.0, 8.5})
+        Primitives::Point({4.5, 0.0, 0.0}),
+        Primitives::Point({4.5, 0.0, 11.5}),
+        Primitives::Point({0.0, 0.0, 11.5})
     );
 
     Primitives::Cylinder cylinder = Primitives::Cylinder(
         TGACOLOR(128, 0, 128),
         Primitives::Point({-0.5f, 2.4f, 2.5f}),
-        Primitives::Point({0.7f, 2.4f, 4.0f}),
+        Primitives::Point({0.2f, 2.4f, 4.0f}),
         0.3f
     );
 
@@ -78,7 +78,6 @@ int main() {
             float pixelWidth = camera.GetFilmplaneWidth() / width;
             float pixelHeight = camera.GetFilmplaneHeight() / height;
 
-            // TODO: change this based on camera rotation
             dir = Primitives::Direction({
                 // Pixel offset + offset to middle of pixel - offset to center film plane
                 (pixelWidth * x) + (pixelWidth / 2) - camera.GetFilmplaneWidth() / 2,
@@ -97,7 +96,18 @@ int main() {
                 Primitives::IntersectionInfo intersection = shape->Intersect(ray);
                 if (intersection.hit && intersection.rayDist < currentMinDist) {
                     currentMinDist = intersection.rayDist;
-                    color = intersection.color;
+
+                    // color = TGACOLOR(
+                    //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.x())) * 255),
+                    //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.y())) * 255),
+                    //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.z())) * 255)
+                    // );
+
+                    color = TGACOLOR(
+                        static_cast<uint8_t>((intersection.normal.x() + 1) * 128),
+                        static_cast<uint8_t>((intersection.normal.y() + 1) * 128),
+                        static_cast<uint8_t>((intersection.normal.z() + 1) * 128)
+                    );
                 }
             }
 

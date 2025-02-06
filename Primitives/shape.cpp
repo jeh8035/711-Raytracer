@@ -3,10 +3,11 @@
 namespace Primitives {
 
 #pragma region Sphere
-    Sphere::Sphere(const TGAColor& _material, const float& _radius, const Point& _position) {
+    Sphere::Sphere(const TGAColor& _material, const float& _radius, const Point& _position) :
+        radius(_radius),
+        position(_position)
+    {
         material = _material;
-        radius = _radius;
-        position = _position;
     }
 
     void Sphere::Transform(const algebra::Matrix4f& matrix) {
@@ -45,11 +46,12 @@ namespace Primitives {
 #pragma endregion
 
 #pragma region Triangle
-    Triangle::Triangle(const TGAColor& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) {
+    Triangle::Triangle(const TGAColor& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) :
+        vert1(_vert1),
+        vert2(_vert2),
+        vert3(_vert3)
+    {
         material = _material;
-        vert1 = _vert1;
-        vert2 = _vert2;
-        vert3 = _vert3;
     }
 
     IntersectionInfo Triangle::Intersect(const Ray& ray) const {
@@ -92,11 +94,12 @@ namespace Primitives {
 #pragma endregion
 
 #pragma region Cylinder
-    Cylinder::Cylinder(const TGAColor& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) {
+    Cylinder::Cylinder(const TGAColor& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) :
+        endpoint1(_endpoint1),
+        endpoint2(_endpoint2),
+        radius(_radius)
+    {
         material = _material;
-        endpoint1 = _endpoint1;
-        endpoint2 = _endpoint2;
-        radius = _radius;
     }
 
     IntersectionInfo Cylinder::Intersect(const Ray& ray) const {

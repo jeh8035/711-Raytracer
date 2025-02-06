@@ -7,6 +7,12 @@
 
 namespace Primitives {
     
+    struct Illuminance {
+        float red = 0.0f;
+        float green = 0.0f;
+        float blue = 0.0f;
+    };
+
     // Information returned from a ray hit
     struct IntersectionInfo {
         bool hit = false;

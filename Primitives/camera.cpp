@@ -2,14 +2,13 @@
 
 namespace Primitives {
 
-    Camera::Camera(Point _position, Point _lookat, float _filmplane_width, float _filmplane_height, float _filmplane_dist)
-    {
-        position = _position;
-        lookat = _lookat.normalize();
-        filmplane_width = _filmplane_width;
-        filmplane_height = _filmplane_height;
-        filmplane_dist = _filmplane_dist;
-    }
+    Camera::Camera(Point _position, Point _lookat, float _filmplane_width, float _filmplane_height, float _filmplane_dist) :
+        position(_position),
+        lookat(_lookat.normalize()),
+        filmplane_width(_filmplane_width),
+        filmplane_height(_filmplane_height),
+        filmplane_dist(_filmplane_dist)
+    {}
 
     algebra::Matrix4f Camera::GetViewMatrix() {
         algebra::Vector3f rot = algebra::Vector3f({
