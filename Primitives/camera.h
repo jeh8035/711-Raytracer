@@ -16,6 +16,7 @@ namespace Primitives {
 
         public:
             Camera(Point _position, Point _lookat, float _filmplane_width, float _filmplane_height, float _filmplane_dist);
+            Camera() {};
 
             float GetFilmplaneWidth() {return filmplane_width;}
             float GetFilmplaneHeight() {return filmplane_height;}

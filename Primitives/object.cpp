@@ -1,9 +1,9 @@
-#include "shape.h"
+#include "object.h"
 
 namespace Primitives {
 
 #pragma region Sphere
-    Sphere::Sphere(const TGAColor& _material, const float& _radius, const Point& _position) :
+    Sphere::Sphere(const Material& _material, const float& _radius, const Point& _position) :
         radius(_radius),
         position(_position)
     {
@@ -30,7 +30,7 @@ namespace Primitives {
 
         if (innerQuadratic >= 0) {
             result.hit = true;
-            result.color = material;
+            result.irradiance = material.diffuse;
 
             result.rayDist = std::min(
                 (-B + sqrt(innerQuadratic)) / 2,
@@ -46,7 +46,7 @@ namespace Primitives {
 #pragma endregion
 
 #pragma region Triangle
-    Triangle::Triangle(const TGAColor& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) :
+    Triangle::Triangle(const Material& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) :
         vert1(_vert1),
         vert2(_vert2),
         vert3(_vert3)
@@ -79,7 +79,7 @@ namespace Primitives {
             result.hit = false;
         } else {
             result.hit = true;
-            result.color = material;
+            result.irradiance = material.diffuse;
             result.rayDist = wuv.x();
             result.normal = -e1.cross(e2).normalize();
         }
@@ -94,7 +94,7 @@ namespace Primitives {
 #pragma endregion
 
 #pragma region Cylinder
-    Cylinder::Cylinder(const TGAColor& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) :
+    Cylinder::Cylinder(const Material& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) :
         endpoint1(_endpoint1),
         endpoint2(_endpoint2),
         radius(_radius)
@@ -125,7 +125,7 @@ namespace Primitives {
             if (t >= 0.0f && t <= length) {
                 result.hit = true;
                 result.rayDist = d;
-                result.color = material;
+                result.irradiance = material.diffuse;
             }
 
             result.normal = (ray.GetDirection() * d - axis * t - endpoint1).normalize();
@@ -144,7 +144,7 @@ namespace Primitives {
                     result.hit = true;
                     if (case1 && case2) result.rayDist = std::min(d1, d2);
                     else result.rayDist = case1 ? d1 : d2;
-                    result.color = material;
+                    result.irradiance = material.diffuse;
 
                     result.normal = t < length/2.0f ? -axis : axis;
                 }
