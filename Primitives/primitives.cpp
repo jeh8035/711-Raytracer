@@ -7,4 +7,9 @@ namespace Primitives {
         algebra::Vector4f result = m * b;
         return Point({result.x(), result.y(), result.z()});
     }
+
+    Ray::Ray(const Point& _position, const Direction& _direction) :
+        position{_position},
+        direction{_direction}
+    {}
 }

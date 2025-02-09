@@ -10,6 +10,8 @@ namespace Primitives {
             Point position;
             Direction lookat;
 
+            algebra::Matrix4f transform_matrix;
+
             float filmplane_width;
             float filmplane_height;
             float filmplane_dist;
@@ -22,7 +24,7 @@ namespace Primitives {
             float GetFilmplaneHeight() {return filmplane_height;}
             float GetFilmplaneDist() {return filmplane_dist;}
 
-            algebra::Matrix4f GetViewMatrix();
+            const algebra::Matrix4f& GetViewMatrix() {return transform_matrix;}
     };
 
 }

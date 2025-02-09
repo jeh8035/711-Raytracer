@@ -8,9 +8,7 @@ namespace Primitives {
         filmplane_width(_filmplane_width),
         filmplane_height(_filmplane_height),
         filmplane_dist(_filmplane_dist)
-    {}
-
-    algebra::Matrix4f Camera::GetViewMatrix() {
+    {
         algebra::Vector3f rot = algebra::Vector3f({
             std::atan2(lookat.y(), lookat.z()),
             -std::atan2(lookat.x(), lookat.z()),
@@ -31,7 +29,7 @@ namespace Primitives {
             0.0f, 0.0f, 0.0f, 1.0f
         });
 
-        return rot_matrix * translation_matrix;
+        transform_matrix = rot_matrix * translation_matrix;
     }
 
 }

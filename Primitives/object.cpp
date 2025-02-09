@@ -83,6 +83,7 @@ namespace Primitives {
             result.rayDist = wuv.x();
             result.normal = -e1.cross(e2).normalize();
         }
+
         return result;
     }
         

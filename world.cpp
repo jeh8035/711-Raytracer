@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include <iostream>
+
 void World::RayTrace() {
 
     CreateObjects();
@@ -34,23 +36,39 @@ void World::RayTrace() {
             // Intersect objects
             Primitives::IntersectionInfo intersection = CastRay(ray);
             
-            // color = TGACOLOR(
-            //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.x())) * 255),
-            //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.y())) * 255),
-            //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.z())) * 255)
-            // );
+            if (intersection.hit) {
+                Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
 
-            // color = TGACOLOR(
-            //     static_cast<uint8_t>((intersection.normal.x() + 1) * 128),
-            //     static_cast<uint8_t>((intersection.normal.y() + 1) * 128),
-            //     static_cast<uint8_t>((intersection.normal.z() + 1) * 128)
-            // );
+                // Detect shadow
+                Primitives::Direction dir_to_light = (light.GetPosition() - intersection_point).normalize();
 
-            color = TGACOLOR(
-                static_cast<uint8_t>(intersection.irradiance.red * 255),
-                static_cast<uint8_t>(intersection.irradiance.green * 255),
-                static_cast<uint8_t>(intersection.irradiance.blue * 255)
-            );
+                Primitives::Ray ray_to_light = Primitives::Ray(
+                    intersection_point + (dir_to_light * .0001f),
+                    (light.GetPosition() - intersection_point).normalize()
+                );
+                Primitives::IntersectionInfo light_intersection = CastRay(ray_to_light);
+
+                if (!light_intersection.hit) {
+                //     color = TGACOLOR(
+                //         static_cast<uint8_t>(intersection.object->GetMaterial().diffuse.red * 255),
+                //         static_cast<uint8_t>(intersection.object->GetMaterial().diffuse.green * 255),
+                //         static_cast<uint8_t>(intersection.object->GetMaterial().diffuse.blue * 255)
+                //     );
+                //
+
+                // color = TGACOLOR(
+                //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.x())) * 255),
+                //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.y())) * 255),
+                //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.z())) * 255)
+                // );
+
+                    color = TGACOLOR(
+                        static_cast<uint8_t>((intersection.normal.x() + 1) * 128),
+                        static_cast<uint8_t>((intersection.normal.y() + 1) * 128),
+                        static_cast<uint8_t>((intersection.normal.z() + 1) * 128)
+                    );
+                }
+            }
 
             // Set pixel color
             TGASetPixel(&image, x, y, color);
@@ -69,6 +87,7 @@ Primitives::IntersectionInfo World::CastRay(const Primitives::Ray& ray) {
         if (intersection.hit && intersection.rayDist < currentMinDist) {
             currentMinDist = intersection.rayDist;
             result = intersection;
+            result.object = object;
         }
     }
 
@@ -76,7 +95,7 @@ Primitives::IntersectionInfo World::CastRay(const Primitives::Ray& ray) {
 }
 
 void World::CreateObjects() {
-    // Create camera
+    // Camera
     camera = Primitives::Camera(
         Primitives::Point({1.1f, 1.9f, -5.0f}),
         Primitives::Direction({0.0f, 0.0f, 1.0f}),
@@ -85,6 +104,7 @@ void World::CreateObjects() {
         0.2f
     );
 
+    // Materials
     Primitives::Material material1 = Primitives::Material(
         Primitives::Color(1.0f, 0.0f, 0.0f),
         Primitives::Color(1.0f, 1.0f, 1.0f),
@@ -121,7 +141,7 @@ void World::CreateObjects() {
         2.0f
     );
 
-    // Define objects
+    // Objects
     objects.emplace_back( new Primitives::Sphere(
         material1,
         0.5f,
@@ -154,6 +174,9 @@ void World::CreateObjects() {
         Primitives::Point({0.2f, 0.4f, 3.6f}),
         0.3f
     ));
+
+    // Lights
+    light = Primitives::Light({1.4f, 9.8f, 3.0f});
 }
 
 void World::TransformObjectsToCameraSpace() {
@@ -161,4 +184,5 @@ void World::TransformObjectsToCameraSpace() {
     for (auto& object : objects) {
         object->Transform(camera.GetViewMatrix());
     }
+    light.Transform(camera.GetViewMatrix());
 }

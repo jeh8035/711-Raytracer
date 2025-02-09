@@ -3,6 +3,7 @@
 
 #include "Primitives/object.h"
 #include "Primitives/camera.h"
+#include "Primitives/light.h"
 
 #include <memory>
 
@@ -15,7 +16,9 @@ class World {
 
     private:
         Primitives::Camera camera;
-        std::vector<std::unique_ptr<Primitives::Object>> objects;
+        
+        std::vector<std::shared_ptr<Primitives::Object>> objects;
+        Primitives::Light light;
 
         const uint32_t width = 1920;
         const uint32_t height = 1080;
