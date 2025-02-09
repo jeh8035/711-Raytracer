@@ -43,7 +43,7 @@ void World::RayTrace() {
                 Primitives::Direction dir_to_light = (light.GetPosition() - intersection_point).normalize();
 
                 Primitives::Ray ray_to_light = Primitives::Ray(
-                    intersection_point + (dir_to_light * .0001f),
+                    intersection_point + (intersection.normal * .00001f),
                     (light.GetPosition() - intersection_point).normalize()
                 );
                 Primitives::IntersectionInfo light_intersection = CastRay(ray_to_light);
@@ -176,7 +176,7 @@ void World::CreateObjects() {
     ));
 
     // Lights
-    light = Primitives::Light({1.4f, 9.8f, 3.0f});
+    light = Primitives::Light({-1.0f, 6.0f, -3.0f});
 }
 
 void World::TransformObjectsToCameraSpace() {

@@ -29,16 +29,18 @@ namespace Primitives {
         float innerQuadratic = pow(B, 2) - 4 * C;
 
         if (innerQuadratic >= 0) {
-            result.hit = true;
-            result.irradiance = material.diffuse;
-
             result.rayDist = std::min(
                 (-B + sqrt(innerQuadratic)) / 2,
                 (-B - sqrt(innerQuadratic)) / 2
             );
 
-            auto intersect_position = ray.GetDirection() * result.rayDist;
-            result.normal = (intersect_position - position).normalize();
+            // Discard negative dist
+            if (result.rayDist > 0.0) {
+                result.hit = true;
+                result.irradiance = material.diffuse;
+                auto intersect_position = ray.GetDirection() * result.rayDist;
+                result.normal = (intersect_position - position).normalize();
+            }
         }
 
         return result;
@@ -78,10 +80,14 @@ namespace Primitives {
         if (wuv.x() < 0 || wuv.y() < 0 || wuv.z() < 0 || wuv.y() + wuv.z() > 1.0 ) {
             result.hit = false;
         } else {
-            result.hit = true;
-            result.irradiance = material.diffuse;
             result.rayDist = wuv.x();
-            result.normal = -e1.cross(e2).normalize();
+
+            // Discard negative dist
+            if (result.rayDist > 0.0) {
+                result.hit = true;
+                result.irradiance = material.diffuse;
+                result.normal = -e1.cross(e2).normalize();
+            }
         }
 
         return result;
@@ -106,48 +112,58 @@ namespace Primitives {
     IntersectionInfo Cylinder::Intersect(const Ray& ray) const {
         IntersectionInfo result = IntersectionInfo();
 
-        algebra::Vector3f axis = (endpoint2 - endpoint1).normalize();
+        Point endpoint1_transformed = endpoint1 - ray.GetPosition();
+        Point endpoint2_transformed = endpoint2 - ray.GetPosition();
+
+        algebra::Vector3f axis = (endpoint2_transformed - endpoint1_transformed).normalize();
 
         algebra::Vector3f n_cross_a = ray.GetDirection().cross(axis);
 
         float innerQuadratic = n_cross_a.dot(n_cross_a) * powf(radius, 2.0f) - 
-            powf(endpoint1 * n_cross_a, 2.0f);
+            powf(endpoint1_transformed * n_cross_a, 2.0f);
 
 
         if (innerQuadratic >= 0.0f) {
             float d = std::min(
-                ((n_cross_a * endpoint1.cross(axis)) + std::sqrt(innerQuadratic)) / (n_cross_a * n_cross_a),
-                ((n_cross_a * endpoint1.cross(axis)) - std::sqrt(innerQuadratic)) / (n_cross_a * n_cross_a)
+                ((n_cross_a * endpoint1_transformed.cross(axis)) + std::sqrt(innerQuadratic)) / (n_cross_a * n_cross_a),
+                ((n_cross_a * endpoint1_transformed.cross(axis)) - std::sqrt(innerQuadratic)) / (n_cross_a * n_cross_a)
             );
 
-            float length = (endpoint2 - endpoint1).norm();
-            float t = axis * (ray.GetDirection() * d - endpoint1);
+            float length = (endpoint2_transformed - endpoint1_transformed).norm();
+            float t = axis * (ray.GetDirection() * d - endpoint1_transformed);
 
             if (t >= 0.0f && t <= length) {
-                result.hit = true;
                 result.rayDist = d;
-                result.irradiance = material.diffuse;
+
+                // Discard negative dist
+                if (result.rayDist > 0.0) {
+                    result.hit = true;
+                    result.irradiance = material.diffuse;
+                }
             }
 
-            result.normal = (ray.GetDirection() * d - axis * t - endpoint1).normalize();
+            result.normal = (ray.GetDirection() * d - axis * t - endpoint1_transformed).normalize();
 
             // End caps
             {
-                float d1 = (axis * endpoint1) / (axis * ray.GetDirection());
-                bool case1 = (ray.GetDirection() * d1 - endpoint1).norm_squared() < pow(radius, 2.0f);
+                float d1 = (axis * endpoint1_transformed) / (axis * ray.GetDirection());
+                bool case1 = (ray.GetDirection() * d1 - endpoint1_transformed).norm_squared() < pow(radius, 2.0f);
                 case1 = case1 && (!result.hit || d1 < d);
 
-                float d2 = (axis * endpoint2) / (axis * ray.GetDirection());
-                bool case2 = (ray.GetDirection() * d2 - endpoint2).norm_squared() < pow(radius, 2.0f);
+                float d2 = (axis * endpoint2_transformed) / (axis * ray.GetDirection());
+                bool case2 = (ray.GetDirection() * d2 - endpoint2_transformed).norm_squared() < pow(radius, 2.0f);
                 case2 = case2 && (!result.hit || d2 < d);
 
                 if (case1 || case2){
-                    result.hit = true;
                     if (case1 && case2) result.rayDist = std::min(d1, d2);
                     else result.rayDist = case1 ? d1 : d2;
-                    result.irradiance = material.diffuse;
 
-                    result.normal = t < length/2.0f ? -axis : axis;
+                    if (result.rayDist > 0.0) {
+                        result.hit = true;
+                        result.irradiance = material.diffuse;
+                        result.normal = t < length/2.0f ? -axis : axis;
+                    }
+
                 }
             }
 
