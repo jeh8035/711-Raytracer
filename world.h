@@ -20,8 +20,8 @@ class World {
         std::vector<std::shared_ptr<Primitives::Object>> objects;
         Primitives::Light light;
 
-        const uint32_t width = 1920;
-        const uint32_t height = 1080;
+        const uint32_t width = 1280;
+        const uint32_t height = 720;
         const float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
 
         void CreateObjects();

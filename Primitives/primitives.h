@@ -79,6 +79,9 @@ namespace Primitives {
         Color irradiance = Color(0.0f, 0.0f, 0.0f);
         std::shared_ptr<Object> object;
     };
+
+
+    Direction ReflectRay(Direction ray, Direction normal);
 }
 
 #endif

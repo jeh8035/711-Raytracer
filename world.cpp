@@ -49,24 +49,23 @@ void World::RayTrace() {
                 Primitives::IntersectionInfo light_intersection = CastRay(ray_to_light);
 
                 if (!light_intersection.hit) {
-                //     color = TGACOLOR(
-                //         static_cast<uint8_t>(intersection.object->GetMaterial().diffuse.red * 255),
-                //         static_cast<uint8_t>(intersection.object->GetMaterial().diffuse.green * 255),
-                //         static_cast<uint8_t>(intersection.object->GetMaterial().diffuse.blue * 255)
-                //     );
-                //
 
-                // color = TGACOLOR(
-                //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.x())) * 255),
-                //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.y())) * 255),
-                //     static_cast<uint8_t>((std::max(0.0f, intersection.normal.z())) * 255)
-                // );
+                    float diffuse = intersection.object->GetMaterial().phong_diffuse * 1.0f * (dir_to_light * intersection.normal);
+                    float specular = intersection.object->GetMaterial().phong_specular * 1.0f * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
+                    float intensity = diffuse + specular;
 
                     color = TGACOLOR(
-                        static_cast<uint8_t>((intersection.normal.x() + 1) * 128),
-                        static_cast<uint8_t>((intersection.normal.y() + 1) * 128),
-                        static_cast<uint8_t>((intersection.normal.z() + 1) * 128)
+                        static_cast<uint8_t>(intensity * 255),
+                        static_cast<uint8_t>(intensity * 255),
+                        static_cast<uint8_t>(intensity * 255)
                     );
+
+                    // Normal colors
+                    // color = TGACOLOR(
+                    //     static_cast<uint8_t>((intersection.normal.x() + 1) * 128),
+                    //     static_cast<uint8_t>((intersection.normal.y() + 1) * 128),
+                    //     static_cast<uint8_t>((intersection.normal.z() + 1) * 128)
+                    // );
                 }
             }
 
@@ -111,7 +110,7 @@ void World::CreateObjects() {
         0.0f,
         0.5f,
         0.5f,
-        2.0f
+        10.0f
     );
 
     Primitives::Material material2 = Primitives::Material(
@@ -120,7 +119,7 @@ void World::CreateObjects() {
         0.0f,
         0.5f,
         0.5f,
-        2.0f
+        10.0f
     );
 
     Primitives::Material material3 = Primitives::Material(
@@ -129,7 +128,7 @@ void World::CreateObjects() {
         0.0f,
         0.5f,
         0.5f,
-        2.0f
+        10.0f
     );
 
     Primitives::Material material4 = Primitives::Material(
@@ -138,7 +137,7 @@ void World::CreateObjects() {
         0.0f,
         0.5f,
         0.5f,
-        2.0f
+        10.0f
     );
 
     // Objects

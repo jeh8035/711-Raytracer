@@ -12,4 +12,8 @@ namespace Primitives {
         position{_position},
         direction{_direction}
     {}
+
+    Direction ReflectRay(Direction ray, Direction normal) {
+        return ray - 2 * ((ray * normal) / normal.norm_squared()) * normal;
+    }
 }
