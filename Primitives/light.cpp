@@ -2,8 +2,9 @@
 
 namespace Primitives {
 
-    Light::Light(Point _position) :
-        position(_position)
+    Light::Light(Point _position, float _intensity) :
+        position(_position),
+        intensity(_intensity)
     {}
 
     void Light::Transform(const algebra::Matrix4f& matrix){

@@ -9,7 +9,9 @@
 
 class World {
     public:
-        World(){};
+        World() :
+            irradiances(std::vector<std::vector<Primitives::Color>>(width, std::vector<Primitives::Color>(height, Primitives::Color(0.0f, 0.0f, 0.0f))))
+        {};
 
         void RayTrace();
         Primitives::IntersectionInfo CastRay(const Primitives::Ray& ray);
@@ -23,6 +25,8 @@ class World {
         const uint32_t width = 1280;
         const uint32_t height = 720;
         const float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
+
+        std::vector<std::vector<Primitives::Color>> irradiances;
 
         void CreateObjects();
         void TransformObjectsToCameraSpace();

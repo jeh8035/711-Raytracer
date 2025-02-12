@@ -7,14 +7,9 @@ void World::RayTrace() {
     CreateObjects();
     TransformObjectsToCameraSpace();
 
-    // Create image
-    TGA image = TGANew(width, height, TGACOLOR(0,0,0));
-
     // Cast rays
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
-            TGAColor color = TGACOLOR(0, 0, 0);
-
             Primitives::Direction dir = Primitives::Direction();
             
             // Pixel size in world units
@@ -50,25 +45,27 @@ void World::RayTrace() {
 
                 if (!light_intersection.hit) {
 
-                    Primitives::Color diffuse = intersection.object->GetMaterial().diffuse_color * intersection.object->GetMaterial().phong_diffuse * 1.0f * (dir_to_light * intersection.normal);
-                    Primitives::Color specular = intersection.object->GetMaterial().specular_color * intersection.object->GetMaterial().phong_specular * 1.0f * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
-                    Primitives::Color intensity = diffuse + specular;
-
-                    color = TGACOLOR(
-                        static_cast<uint8_t>(intensity.red * 255),
-                        static_cast<uint8_t>(intensity.green * 255),
-                        static_cast<uint8_t>(intensity.blue * 255)
-                    );
-
-                    // Normal colors
-                    // color = TGACOLOR(
-                    //     static_cast<uint8_t>((intersection.normal.x() + 1) * 128),
-                    //     static_cast<uint8_t>((intersection.normal.y() + 1) * 128),
-                    //     static_cast<uint8_t>((intersection.normal.z() + 1) * 128)
-                    // );
+                    Primitives::Color diffuse = intersection.object->GetMaterial().diffuse_color * intersection.object->GetMaterial().phong_diffuse * light.GetIntensity() * (dir_to_light * intersection.normal);
+                    Primitives::Color specular = intersection.object->GetMaterial().specular_color * intersection.object->GetMaterial().phong_specular * light.GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
+                    irradiances[x][y] += diffuse + specular;
                 }
             }
 
+        }
+    }
+
+
+    // Create image
+    TGA image = TGANew(width, height, TGACOLOR(0,0,0));
+    
+    // Tone mapping
+    for (uint32_t y = 0; y < height; y++) {
+        for (uint32_t x = 0; x < width; x++) {
+            TGAColor color = TGACOLOR(
+                static_cast<uint8_t>(std::min(irradiances[x][y].red * 255.0f, 255.0f)),
+                static_cast<uint8_t>(std::min(irradiances[x][y].green * 255.0f, 255.0f)),
+                static_cast<uint8_t>(std::min(irradiances[x][y].blue * 255.0f, 255.0f))
+            );
             // Set pixel color
             TGASetPixel(&image, x, y, color);
         }
@@ -126,8 +123,8 @@ void World::CreateObjects() {
         Primitives::Color(0.0f, 1.0f, 0.0f),
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
-        0.5f,
-        0.5f,
+        0.1f,
+        0.9f,
         10.0f
     );
 
@@ -135,8 +132,8 @@ void World::CreateObjects() {
         Primitives::Color(0.0f, 0.0f, 1.0f),
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
-        0.5f,
-        0.5f,
+        0.9f,
+        0.1f,
         10.0f
     );
 
@@ -175,7 +172,7 @@ void World::CreateObjects() {
     ));
 
     // Lights
-    light = Primitives::Light({-1.0f, 6.0f, -3.0f});
+    light = Primitives::Light({-1.0f, 6.0f, -3.0f}, 2.0f);
 }
 
 void World::TransformObjectsToCameraSpace() {

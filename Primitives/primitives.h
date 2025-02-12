@@ -25,12 +25,18 @@ namespace Primitives {
             blue(_blue)
         {}
 
-        const Color operator*(float b) const{
-            return Color(this->red * b, this->green * b, this->blue * b);
+        inline const Color operator*(float b) const{
+            return Color(red * b, green * b, blue * b);
         }
 
-        const Color operator+(const Color& color) const{
-            return Color(this->red + color.red, this->green + color.green, this->blue + color.blue);
+        inline const Color operator+(const Color& color) const{
+            return Color(red + color.red, green + color.green, blue + color.blue);
+        }
+
+        inline const void operator+=(const Color& color){
+            red += color.red;
+            green += color.green;
+            blue += color.blue;
         }
     };
 
