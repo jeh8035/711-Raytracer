@@ -10,44 +10,54 @@ void World::RayTrace() {
     // Cast rays
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
-            Primitives::Direction dir = Primitives::Direction();
-            
-            // Pixel size in world units
-            float pixelWidth = camera.GetFilmplaneWidth() / width;
-            float pixelHeight = camera.GetFilmplaneHeight() / height;
+            for (uint32_t s = 0; s < supersample_amount; s++) {
+                Primitives::Direction dir = Primitives::Direction();
+                
+                // Pixel size in world units
+                float pixelWidth = camera.GetFilmplaneWidth() / width;
+                float pixelHeight = camera.GetFilmplaneHeight() / height;
+                
+                // Random offsets within pixel for supersampling
+                float s_offset_x = 0.0f;
+                float s_offset_y = 0.0f;
+                if (supersample_amount > 1) {
+                    s_offset_x = pixelWidth * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelWidth / 2.0f;
+                    s_offset_y = pixelHeight * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelHeight / 2.0f;
+                }
 
-            dir = Primitives::Direction({
-                // Pixel offset + offset to middle of pixel - offset to center film plane
-                (pixelWidth * x) + (pixelWidth / 2) - camera.GetFilmplaneWidth() / 2,
-                (pixelHeight * y) + (pixelHeight / 2) - camera.GetFilmplaneHeight() / 2,
-                camera.GetFilmplaneDist(),
-            }).normalize();
+                dir = Primitives::Direction({
+                    // Pixel offset + offset to middle of pixel - offset to center film plane
+                    (pixelWidth * x) + (pixelWidth / 2) + s_offset_x - camera.GetFilmplaneWidth() / 2,
+                    (pixelHeight * y) + (pixelHeight / 2) + s_offset_y - camera.GetFilmplaneHeight() / 2,
+                    camera.GetFilmplaneDist(),
+                }).normalize();
 
-            Primitives::Ray ray = Primitives::Ray(
-                Primitives::Point({0, 0, 0}),
-                dir
-            );
-
-            // Intersect objects
-            Primitives::IntersectionInfo intersection = CastRay(ray);
-            
-            if (intersection.hit) {
-                Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
-
-                // Detect shadow
-                Primitives::Direction dir_to_light = (light.GetPosition() - intersection_point).normalize();
-
-                Primitives::Ray ray_to_light = Primitives::Ray(
-                    intersection_point + (intersection.normal * .00001f),
-                    (light.GetPosition() - intersection_point).normalize()
+                Primitives::Ray ray = Primitives::Ray(
+                    Primitives::Point({0, 0, 0}),
+                    dir
                 );
-                Primitives::IntersectionInfo light_intersection = CastRay(ray_to_light);
 
-                if (!light_intersection.hit) {
+                // Intersect objects
+                Primitives::IntersectionInfo intersection = CastRay(ray);
+                
+                if (intersection.hit) {
+                    Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
 
-                    Primitives::Color diffuse = intersection.object->GetMaterial().diffuse_color * intersection.object->GetMaterial().phong_diffuse * light.GetIntensity() * (dir_to_light * intersection.normal);
-                    Primitives::Color specular = intersection.object->GetMaterial().specular_color * intersection.object->GetMaterial().phong_specular * light.GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
-                    irradiances[x][y] += diffuse + specular;
+                    // Detect shadow
+                    Primitives::Direction dir_to_light = (light.GetPosition() - intersection_point).normalize();
+
+                    Primitives::Ray ray_to_light = Primitives::Ray(
+                        intersection_point + (intersection.normal * .00001f),
+                        (light.GetPosition() - intersection_point).normalize()
+                    );
+                    Primitives::IntersectionInfo light_intersection = CastRay(ray_to_light);
+
+                    if (!light_intersection.hit) {
+
+                        Primitives::Color diffuse = intersection.object->GetMaterial().diffuse_color * intersection.object->GetMaterial().phong_diffuse * light.GetIntensity() * (dir_to_light * intersection.normal);
+                        Primitives::Color specular = intersection.object->GetMaterial().specular_color * intersection.object->GetMaterial().phong_specular * light.GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
+                        irradiances[x][y] += (diffuse + specular) * (1.0f/supersample_amount);
+                    }
                 }
             }
 
@@ -57,7 +67,7 @@ void World::RayTrace() {
 
     // Create image
     TGA image = TGANew(width, height, TGACOLOR(0,0,0));
-    
+
     // Tone mapping
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
