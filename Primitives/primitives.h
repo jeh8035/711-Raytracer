@@ -24,19 +24,27 @@ namespace Primitives {
             green(_green),
             blue(_blue)
         {}
+
+        const Color operator*(float b) const{
+            return Color(this->red * b, this->green * b, this->blue * b);
+        }
+
+        const Color operator+(const Color& color) const{
+            return Color(this->red + color.red, this->green + color.green, this->blue + color.blue);
+        }
     };
 
     struct Material {
-        Color diffuse;
-        Color specular;
+        Color diffuse_color;
+        Color specular_color;
         float phong_bg;
         float phong_diffuse;
         float phong_specular;
         float phong_exponent; 
         Material(){};
-        Material(Color _diffuse, Color _specular, float _phong_bg, float _phong_diffuse, float _phong_specular, float _phong_exponent) :
-            diffuse(_diffuse),
-            specular(_specular),
+        Material(Color _diffuse_color, Color _specular_color, float _phong_bg, float _phong_diffuse, float _phong_specular, float _phong_exponent) :
+            diffuse_color(_diffuse_color),
+            specular_color(_specular_color),
             phong_bg(_phong_bg),
             phong_diffuse(_phong_diffuse),
             phong_specular(_phong_specular),

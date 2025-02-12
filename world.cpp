@@ -50,14 +50,14 @@ void World::RayTrace() {
 
                 if (!light_intersection.hit) {
 
-                    float diffuse = intersection.object->GetMaterial().phong_diffuse * 1.0f * (dir_to_light * intersection.normal);
-                    float specular = intersection.object->GetMaterial().phong_specular * 1.0f * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
-                    float intensity = diffuse + specular;
+                    Primitives::Color diffuse = intersection.object->GetMaterial().diffuse_color * intersection.object->GetMaterial().phong_diffuse * 1.0f * (dir_to_light * intersection.normal);
+                    Primitives::Color specular = intersection.object->GetMaterial().specular_color * intersection.object->GetMaterial().phong_specular * 1.0f * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
+                    Primitives::Color intensity = diffuse + specular;
 
                     color = TGACOLOR(
-                        static_cast<uint8_t>(intensity * 255),
-                        static_cast<uint8_t>(intensity * 255),
-                        static_cast<uint8_t>(intensity * 255)
+                        static_cast<uint8_t>(intensity.red * 255),
+                        static_cast<uint8_t>(intensity.green * 255),
+                        static_cast<uint8_t>(intensity.blue * 255)
                     );
 
                     // Normal colors

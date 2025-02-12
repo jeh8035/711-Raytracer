@@ -37,7 +37,7 @@ namespace Primitives {
             // Discard negative dist
             if (result.rayDist > 0.0) {
                 result.hit = true;
-                result.irradiance = material.diffuse;
+                result.irradiance = material.diffuse_color;
                 auto intersect_position = ray.GetDirection() * result.rayDist;
                 result.normal = (intersect_position - position).normalize();
             }
@@ -85,7 +85,7 @@ namespace Primitives {
             // Discard negative dist
             if (result.rayDist > 0.0) {
                 result.hit = true;
-                result.irradiance = material.diffuse;
+                result.irradiance = material.diffuse_color;
                 result.normal = -e1.cross(e2).normalize();
             }
         }
@@ -138,7 +138,7 @@ namespace Primitives {
                 // Discard negative dist
                 if (result.rayDist > 0.0) {
                     result.hit = true;
-                    result.irradiance = material.diffuse;
+                    result.irradiance = material.diffuse_color;
                 }
             }
 
@@ -160,7 +160,7 @@ namespace Primitives {
 
                     if (result.rayDist > 0.0) {
                         result.hit = true;
-                        result.irradiance = material.diffuse;
+                        result.irradiance = material.diffuse_color;
                         result.normal = t < length/2.0f ? -axis : axis;
                     }
 
