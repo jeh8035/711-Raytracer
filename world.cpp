@@ -47,7 +47,7 @@ void World::RayTrace() {
                     Primitives::Direction dir_to_light = (light.GetPosition() - intersection_point).normalize();
 
                     Primitives::Ray ray_to_light = Primitives::Ray(
-                        intersection_point + (intersection.normal * .00001f),
+                        intersection_point + (intersection.normal * epsilon),
                         (light.GetPosition() - intersection_point).normalize()
                     );
                     Primitives::IntersectionInfo light_intersection = CastRay(ray_to_light);

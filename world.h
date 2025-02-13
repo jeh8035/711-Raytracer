@@ -19,6 +19,8 @@ class World {
         const float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
         const uint32_t supersample_amount = 4;
 
+        const float epsilon = .0001f;
+
         std::vector<std::vector<Primitives::Color>> irradiances;
 
     public:
