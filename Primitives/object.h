@@ -2,8 +2,25 @@
 #define SHAPE_H
 
 #include "primitives.h"
+#include "material.h"
 
 namespace Primitives {
+
+    class Transformable {
+        public:
+            virtual void Transform(const algebra::Matrix4f& matrix) = 0;
+    };
+
+    struct IntersectionInfo;
+    class Object : public Transformable {
+        public:
+            virtual IntersectionInfo Intersect(const Ray& ray) const = 0;
+
+            const Material& GetMaterial() {return material;}
+        protected:
+            Material material;
+    };
+
 
     class Sphere : public Object {
         private:

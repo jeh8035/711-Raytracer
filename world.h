@@ -9,30 +9,29 @@
 
 class World {
     private:
-        Primitives::Camera camera;
+        static Primitives::Camera camera;
         
-        std::vector<std::shared_ptr<Primitives::Object>> objects;
-        Primitives::Light light;
+        static std::vector<std::shared_ptr<Primitives::Object>> objects;
+        static Primitives::Light light;
 
-        const uint32_t width = 1280;
-        const uint32_t height = 720;
-        const float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
-        const uint32_t supersample_amount = 4;
+        static constexpr uint32_t width = 1280;
+        static constexpr uint32_t height = 720;
+        static constexpr float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
+        static constexpr uint32_t supersample_amount = 4;
 
-        const float epsilon = .0001f;
+        static constexpr float epsilon = .0001f;
 
-        std::vector<std::vector<Primitives::Color>> irradiances;
+        static std::vector<std::vector<Primitives::Color>> irradiances;
 
     public:
-        World() :
-            irradiances(std::vector<std::vector<Primitives::Color>>(width, std::vector<Primitives::Color>(height, Primitives::Color(0.0f, 0.0f, 0.0f))))
-        {}
-
-        void RayTrace();
+        static void RayTrace();
         
-        Primitives::IntersectionInfo CastRay(const Primitives::Ray& ray);
+        static Primitives::IntersectionInfo CastRay(const Primitives::Ray& ray);
+
+        static const Primitives::Light& GetLight() {return light;}
+        static const float GetEpsilon() {return epsilon;}
 
     private:
-        void CreateObjects();
-        void TransformObjectsToCameraSpace();
+        static void CreateObjects();
+        static void TransformObjectsToCameraSpace();
 };

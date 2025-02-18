@@ -1,7 +1,7 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "primitives.h"
+#include "object.h"
 
 namespace Primitives {
 
@@ -16,9 +16,9 @@ namespace Primitives {
 
             virtual void Transform(const algebra::Matrix4f& matrix);
 
-            const Point& GetPosition() {return position;}
+            const Point& GetPosition() const {return position;}
 
-            const Color& GetIntensity() {return intensity;}
+            const Color& GetIntensity() const {return intensity;}
     };
 
 }

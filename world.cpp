@@ -1,9 +1,22 @@
 #include "world.h"
+#include "Primitives/material.h"
+#include "Primitives/intersection_info.h"
 
 #include <iostream>
 
-void World::RayTrace() {
+Primitives::Camera World::camera;
+std::vector<std::shared_ptr<Primitives::Object>> World::objects;
+Primitives::Light World::light;
+constexpr uint32_t World::width;
+constexpr uint32_t World::height;
+constexpr float World::aspect_ratio;
+constexpr uint32_t World::supersample_amount;
+constexpr float World::epsilon;
+std::vector<std::vector<Primitives::Color>> World::irradiances;
 
+void World::RayTrace() {
+    irradiances = std::vector<std::vector<Primitives::Color>>(width, std::vector<Primitives::Color>(height, Primitives::Color(0.0f, 0.0f, 0.0f)));
+    
     CreateObjects();
     TransformObjectsToCameraSpace();
 
@@ -41,26 +54,10 @@ void World::RayTrace() {
                 Primitives::IntersectionInfo intersection = CastRay(ray);
                 
                 if (intersection.hit) {
-                    Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
-
-                    // Detect shadow
-                    Primitives::Direction dir_to_light = (light.GetPosition() - intersection_point).normalize();
-
-                    Primitives::Ray ray_to_light = Primitives::Ray(
-                        intersection_point + (intersection.normal * epsilon),
-                        (light.GetPosition() - intersection_point).normalize()
-                    );
-                    Primitives::IntersectionInfo light_intersection = CastRay(ray_to_light);
-
-                    if (!light_intersection.hit) {
-
-                        Primitives::Color diffuse = intersection.object->GetMaterial().diffuse_color * intersection.object->GetMaterial().phong_diffuse * light.GetIntensity() * (dir_to_light * intersection.normal);
-                        Primitives::Color specular = intersection.object->GetMaterial().specular_color * intersection.object->GetMaterial().phong_specular * light.GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.object->GetMaterial().phong_exponent);
-                        irradiances[x][y] += (diffuse + specular) * (1.0f/supersample_amount);
-                    }
+                    Primitives::Color color = intersection.material.GetColor(ray, intersection);
+                    irradiances[x][y] += color * (1.0f/supersample_amount);
                 }
             }
-
         }
     }
 
@@ -93,7 +90,7 @@ Primitives::IntersectionInfo World::CastRay(const Primitives::Ray& ray) {
         if (intersection.hit && intersection.rayDist < currentMinDist) {
             currentMinDist = intersection.rayDist;
             result = intersection;
-            result.object = object;
+            result.material = object->GetMaterial();
         }
     }
 
