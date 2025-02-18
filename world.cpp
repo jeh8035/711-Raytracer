@@ -3,6 +3,7 @@
 #include "Primitives/intersection_info.h"
 
 #include <iostream>
+#include <thread>
 
 Primitives::Camera World::camera;
 std::vector<std::shared_ptr<Primitives::Object>> World::objects;
@@ -14,6 +15,47 @@ constexpr uint32_t World::supersample_amount;
 constexpr float World::epsilon;
 std::vector<std::vector<Primitives::Color>> World::irradiances;
 
+
+void World::SingleTrace(u_int32_t y) {
+    for (uint32_t x = 0; x < width; x++) {
+        for (uint32_t s = 0; s < supersample_amount; s++) {
+            Primitives::Direction dir = Primitives::Direction();
+            
+            // Pixel size in world units
+            float pixelWidth = camera.GetFilmplaneWidth() / width;
+            float pixelHeight = camera.GetFilmplaneHeight() / height;
+            
+            // Random offsets within pixel for supersampling
+            float s_offset_x = 0.0f;
+            float s_offset_y = 0.0f;
+            if (supersample_amount > 1) {
+                s_offset_x = pixelWidth * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelWidth / 2.0f;
+                s_offset_y = pixelHeight * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelHeight / 2.0f;
+            }
+
+            dir = Primitives::Direction({
+                // Pixel offset + offset to middle of pixel - offset to center film plane
+                (pixelWidth * x) + (pixelWidth / 2) + s_offset_x - camera.GetFilmplaneWidth() / 2,
+                (pixelHeight * y) + (pixelHeight / 2) + s_offset_y - camera.GetFilmplaneHeight() / 2,
+                camera.GetFilmplaneDist(),
+            }).normalize();
+
+            Primitives::Ray ray = Primitives::Ray(
+                Primitives::Point({0, 0, 0}),
+                dir
+            );
+
+            // Intersect objects
+            Primitives::IntersectionInfo intersection = CastRay(ray);
+            
+            if (intersection.hit) {
+                Primitives::Color color = intersection.material.GetColor(ray, intersection);
+                irradiances[x][y] += color * (1.0f/supersample_amount);
+            }
+        }
+    }
+}
+
 void World::RayTrace() {
     irradiances = std::vector<std::vector<Primitives::Color>>(width, std::vector<Primitives::Color>(height, Primitives::Color(0.0f, 0.0f, 0.0f)));
     
@@ -21,44 +63,14 @@ void World::RayTrace() {
     TransformObjectsToCameraSpace();
 
     // Cast rays
+    static std::vector<std::thread> threads;
+    
     for (uint32_t y = 0; y < height; y++) {
-        for (uint32_t x = 0; x < width; x++) {
-            for (uint32_t s = 0; s < supersample_amount; s++) {
-                Primitives::Direction dir = Primitives::Direction();
-                
-                // Pixel size in world units
-                float pixelWidth = camera.GetFilmplaneWidth() / width;
-                float pixelHeight = camera.GetFilmplaneHeight() / height;
-                
-                // Random offsets within pixel for supersampling
-                float s_offset_x = 0.0f;
-                float s_offset_y = 0.0f;
-                if (supersample_amount > 1) {
-                    s_offset_x = pixelWidth * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelWidth / 2.0f;
-                    s_offset_y = pixelHeight * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelHeight / 2.0f;
-                }
+        threads.emplace_back(std::thread(SingleTrace, y));
+    }
 
-                dir = Primitives::Direction({
-                    // Pixel offset + offset to middle of pixel - offset to center film plane
-                    (pixelWidth * x) + (pixelWidth / 2) + s_offset_x - camera.GetFilmplaneWidth() / 2,
-                    (pixelHeight * y) + (pixelHeight / 2) + s_offset_y - camera.GetFilmplaneHeight() / 2,
-                    camera.GetFilmplaneDist(),
-                }).normalize();
-
-                Primitives::Ray ray = Primitives::Ray(
-                    Primitives::Point({0, 0, 0}),
-                    dir
-                );
-
-                // Intersect objects
-                Primitives::IntersectionInfo intersection = CastRay(ray);
-                
-                if (intersection.hit) {
-                    Primitives::Color color = intersection.material.GetColor(ray, intersection);
-                    irradiances[x][y] += color * (1.0f/supersample_amount);
-                }
-            }
-        }
+    for (std::thread& thread : threads) {
+        thread.join();
     }
 
 

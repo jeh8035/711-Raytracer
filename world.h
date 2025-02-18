@@ -34,4 +34,6 @@ class World {
     private:
         static void CreateObjects();
         static void TransformObjectsToCameraSpace();
+
+        static void SingleTrace(u_int32_t y);
 };

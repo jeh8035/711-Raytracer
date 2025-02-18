@@ -6,9 +6,9 @@
 namespace Primitives {
 
     struct IntersectionInfo;
-    
+
     class Material {
-        public:
+        private:
             Color diffuse_color;
             Color specular_color;
             float phong_bg;
