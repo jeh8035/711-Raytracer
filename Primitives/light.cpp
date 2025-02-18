@@ -2,7 +2,7 @@
 
 namespace Primitives {
 
-    Light::Light(Point _position, float _intensity) :
+    Light::Light(Point _position, Color _intensity) :
         position(_position),
         intensity(_intensity)
     {}

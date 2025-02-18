@@ -182,7 +182,10 @@ void World::CreateObjects() {
     ));
 
     // Lights
-    light = Primitives::Light({-1.0f, 6.0f, -3.0f}, 2.0f);
+    light = Primitives::Light(
+        {-1.0f, 6.0f, -3.0f},
+        Primitives::Color(1.0f, 1.0f, 1.0f)
+    );
 }
 
 void World::TransformObjectsToCameraSpace() {

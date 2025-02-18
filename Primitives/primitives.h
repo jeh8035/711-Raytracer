@@ -29,6 +29,10 @@ namespace Primitives {
             return Color(red * b, green * b, blue * b);
         }
 
+        inline const Color operator*(const Color& color) const{
+            return Color(red * color.red, green * color.green, blue * color.blue);
+        }
+
         inline const Color operator+(const Color& color) const{
             return Color(red + color.red, green + color.green, blue + color.blue);
         }
