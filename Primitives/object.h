@@ -14,9 +14,11 @@ namespace Primitives {
     struct IntersectionInfo;
     class Object : public Transformable {
         public:
+            Object(const Material& _material);
+
             virtual IntersectionInfo Intersect(const Ray& ray) const = 0;
 
-            const Material& GetMaterial() {return material;}
+            const Material& GetMaterial() const {return material;}
         protected:
             Material material;
     };
@@ -24,8 +26,8 @@ namespace Primitives {
 
     class Sphere : public Object {
         private:
-            Point position;
             float radius;
+            Point position;
 
         public:
             Sphere(const Material& _material, const float& _radius, const Point& _position);

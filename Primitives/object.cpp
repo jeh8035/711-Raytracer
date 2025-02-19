@@ -3,13 +3,16 @@
 
 namespace Primitives {
 
+    Object::Object(const Material& _material) :
+        material(_material)
+    {}
+
 #pragma region Sphere
     Sphere::Sphere(const Material& _material, const float& _radius, const Point& _position) :
+        Object(_material),
         radius(_radius),
         position(_position)
-    {
-        material = _material;
-    }
+    {}
 
     void Sphere::Transform(const algebra::Matrix4f& matrix) {
         position = matrix * position;
@@ -49,12 +52,11 @@ namespace Primitives {
 
 #pragma region Triangle
     Triangle::Triangle(const Material& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) :
+        Object(_material),    
         vert1(_vert1),
         vert2(_vert2),
         vert3(_vert3)
-    {
-        material = _material;
-    }
+    {}
 
     IntersectionInfo Triangle::Intersect(const Ray& ray) const {
         IntersectionInfo result = IntersectionInfo();
@@ -101,12 +103,11 @@ namespace Primitives {
 
 #pragma region Cylinder
     Cylinder::Cylinder(const Material& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) :
+        Object(_material),
         endpoint1(_endpoint1),
         endpoint2(_endpoint2),
         radius(_radius)
-    {
-        material = _material;
-    }
+    {}
 
     IntersectionInfo Cylinder::Intersect(const Ray& ray) const {
         IntersectionInfo result = IntersectionInfo();

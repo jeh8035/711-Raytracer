@@ -20,11 +20,11 @@ namespace Primitives {
             Camera(Point _position, Point _lookat, float _filmplane_width, float _filmplane_height, float _filmplane_dist);
             Camera() {};
 
-            float GetFilmplaneWidth() {return filmplane_width;}
-            float GetFilmplaneHeight() {return filmplane_height;}
-            float GetFilmplaneDist() {return filmplane_dist;}
+            float GetFilmplaneWidth() const {return filmplane_width;}
+            float GetFilmplaneHeight() const {return filmplane_height;}
+            float GetFilmplaneDist() const {return filmplane_dist;}
 
-            const algebra::Matrix4f& GetViewMatrix() {return transform_matrix;}
+            const algebra::Matrix4f& GetViewMatrix() const {return transform_matrix;}
     };
 
 }

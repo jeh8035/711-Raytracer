@@ -18,7 +18,7 @@ namespace Primitives {
 
         public:
             Material(){};
-            Material(Color _diffuse_color, Color _specular_color, float _phong_bg, float _phong_diffuse, float _phong_specular, float _phong_exponent);
+            Material(const Color& _diffuse_color, const Color& _specular_color, const float& _phong_bg, const float& _phong_diffuse, const float& _phong_specular, const float& _phong_exponent);
 
             Color GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection) const;
     };

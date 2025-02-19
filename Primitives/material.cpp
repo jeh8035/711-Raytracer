@@ -4,7 +4,7 @@
 #include "../world.h"
 
 namespace Primitives {
-    Material::Material(Color _diffuse_color, Color _specular_color, float _phong_bg, float _phong_diffuse, float _phong_specular, float _phong_exponent) :
+    Material::Material(const Color& _diffuse_color, const Color& _specular_color, const float& _phong_bg, const float& _phong_diffuse, const float& _phong_specular, const float& _phong_exponent) :
         diffuse_color(_diffuse_color),
         specular_color(_specular_color),
         phong_bg(_phong_bg),

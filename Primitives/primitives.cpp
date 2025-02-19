@@ -16,4 +16,29 @@ namespace Primitives {
     Direction ReflectRay(Direction ray, Direction normal) {
         return ray - 2 * ((ray * normal) / normal.norm_squared()) * normal;
     }
+
+
+    Color::Color(const float& _red, const float& _green, const float& _blue) :
+        red(_red),
+        green(_green),
+        blue(_blue)
+    {}
+
+    const Color Color::operator*(float b) const{
+        return Color(red * b, green * b, blue * b);
+    }
+
+    const Color Color::operator*(const Color& color) const{
+        return Color(red * color.red, green * color.green, blue * color.blue);
+    }
+
+    const Color Color::operator+(const Color& color) const{
+        return Color(red + color.red, green + color.green, blue + color.blue);
+    }
+
+    void Color::operator+=(const Color& color){
+        red += color.red;
+        green += color.green;
+        blue += color.blue;
+    }
 }

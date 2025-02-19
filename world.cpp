@@ -15,8 +15,9 @@ constexpr uint32_t World::supersample_amount;
 constexpr float World::epsilon;
 std::vector<std::vector<Primitives::Color>> World::irradiances;
 
-
 void World::SingleTrace(u_int32_t y) {
+    unsigned int rand_seed = y;
+
     for (uint32_t x = 0; x < width; x++) {
         for (uint32_t s = 0; s < supersample_amount; s++) {
             Primitives::Direction dir = Primitives::Direction();
@@ -29,8 +30,8 @@ void World::SingleTrace(u_int32_t y) {
             float s_offset_x = 0.0f;
             float s_offset_y = 0.0f;
             if (supersample_amount > 1) {
-                s_offset_x = pixelWidth * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelWidth / 2.0f;
-                s_offset_y = pixelHeight * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - pixelHeight / 2.0f;
+                s_offset_x = pixelWidth * (static_cast<float>(rand_r(&rand_seed)) / static_cast<float>(RAND_MAX)) - pixelWidth / 2.0f;
+                s_offset_y = pixelHeight * (static_cast<float>(rand_r(&rand_seed)) / static_cast<float>(RAND_MAX)) - pixelHeight / 2.0f;
             }
 
             dir = Primitives::Direction({

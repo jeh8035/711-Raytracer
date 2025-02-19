@@ -13,35 +13,19 @@ namespace Primitives {
     Point operator*(const algebra::Matrix<float, 4, 4>& m, const Point& a);
 
     // Float color
-    struct Color {
-        float red = 0.0f;
-        float green = 0.0f;
-        float blue = 0.0f;
+    class Color {
+        public:
+            float red = 0.0f;
+            float green = 0.0f;
+            float blue = 0.0f;
 
-        Color(){};
-        Color(float _red, float _green, float _blue) :
-            red(_red),
-            green(_green),
-            blue(_blue)
-        {}
+            Color(){};
+            Color(const float& _red, const float& _green, const float& _blue);
 
-        inline const Color operator*(float b) const{
-            return Color(red * b, green * b, blue * b);
-        }
-
-        inline const Color operator*(const Color& color) const{
-            return Color(red * color.red, green * color.green, blue * color.blue);
-        }
-
-        inline const Color operator+(const Color& color) const{
-            return Color(red + color.red, green + color.green, blue + color.blue);
-        }
-
-        inline const void operator+=(const Color& color){
-            red += color.red;
-            green += color.green;
-            blue += color.blue;
-        }
+            const Color operator*(float b) const;
+            const Color operator*(const Color& color) const;
+            const Color operator+(const Color& color) const;
+            void operator+=(const Color& color);
     };
 
     class Ray {
