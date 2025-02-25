@@ -12,7 +12,7 @@ namespace Primitives {
         bool hit = false;
         float rayDist = 0.0f;
         Direction normal;
-        Material material;
+        std::shared_ptr<Material> material;
     };
 }
 

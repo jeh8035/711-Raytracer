@@ -15,6 +15,7 @@ constexpr float World::aspect_ratio;
 constexpr uint32_t World::supersample_amount;
 constexpr float World::epsilon;
 std::vector<std::vector<Primitives::Color>> World::irradiances;
+std::vector<std::shared_ptr<Primitives::Material>> World::materials;
 
 void World::SingleTrace(u_int32_t y) {
     unsigned int rand_seed = y;
@@ -51,7 +52,7 @@ void World::SingleTrace(u_int32_t y) {
             Primitives::IntersectionInfo intersection = CastRay(ray);
             
             if (intersection.hit) {
-                Primitives::Color color = intersection.material.GetColor(ray, intersection);
+                Primitives::Color color = intersection.material->GetColor(ray, intersection);
                 irradiances[x][y] += color * (1.0f/supersample_amount);
             }
         }
@@ -60,7 +61,8 @@ void World::SingleTrace(u_int32_t y) {
 
 void World::RayTrace() {
     irradiances = std::vector<std::vector<Primitives::Color>>(width, std::vector<Primitives::Color>(height, Primitives::Color(0.0f, 0.0f, 0.0f)));
-    
+    materials = std::vector<std::shared_ptr<Primitives::Material>>();
+
     CreateObjects();
     TransformObjectsToCameraSpace();
 
@@ -122,71 +124,73 @@ void World::CreateObjects() {
     );
 
     // Materials
-    Primitives::Material material1 = Primitives::Material(
+    materials.emplace_back(new Primitives::PhongMaterial(
         Primitives::Color(1.0f, 0.0f, 0.0f),
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
         0.5f,
         0.5f,
         10.0f
-    );
+    ));
 
-    Primitives::Material material2 = Primitives::Material(
+    materials.emplace_back(new Primitives::PhongMaterial(
         Primitives::Color(1.0f, 0.0f, 0.0f),
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
         0.5f,
         0.5f,
         10.0f
-    );
+    ));
 
-    Primitives::Material material3 = Primitives::Material(
-        Primitives::Color(0.0f, 1.0f, 0.0f),
-        Primitives::Color(1.0f, 1.0f, 1.0f),
-        0.0f,
-        0.1f,
-        0.9f,
-        10.0f
-    );
+    materials.emplace_back(new Primitives::TilingMaterial());
 
-    Primitives::Material material4 = Primitives::Material(
+    // materials.emplace_back(new Primitives::PhongMaterial(
+    //     Primitives::Color(0.0f, 1.0f, 0.0f),
+    //     Primitives::Color(1.0f, 1.0f, 1.0f),
+    //     0.0f,
+    //     0.1f,
+    //     0.9f,
+    //     10.0f
+    // ));
+
+    materials.emplace_back(new Primitives::PhongMaterial(
         Primitives::Color(0.0f, 0.0f, 1.0f),
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
         0.9f,
         0.1f,
         10.0f
-    );
+    ));
 
     // Objects
     objects.emplace_back( new Primitives::Sphere(
-        material1,
+        materials[0],
         0.5f,
         Primitives::Point({1.4f, 1.8f, 3.0f})
     ));
 
    objects.emplace_back( new Primitives::Sphere(
-        material2,
+        materials[1],
         0.5f,
         Primitives::Point({1.0f, 2.4f, 1.5f})
     ));
 
     objects.emplace_back( new Primitives::Triangle(
-        material3,
+        materials[2],
         Primitives::Point({4.5f, 0.0f, 0.0f}),
         Primitives::Point({0.0f, 0.0f, 11.5f}),
         Primitives::Point({0.0f, 0.0f, 0.0f})
     ));
 
     objects.emplace_back( new Primitives::Triangle(
-        material3,
+        materials[2],
         Primitives::Point({4.5, 0.0, 0.0}),
         Primitives::Point({4.5, 0.0, 11.5}),
         Primitives::Point({0.0, 0.0, 11.5})
     ));
 
     objects.emplace_back( new Primitives::Cylinder(
-        material4,
+        materials[3],
         Primitives::Point({0.0f, 2.4f, 2.5f}),
         Primitives::Point({0.2f, 0.4f, 3.6f}),
         0.3f

@@ -4,7 +4,7 @@
 #include "../world.h"
 
 namespace Primitives {
-    Material::Material(const Color& _diffuse_color, const Color& _specular_color, const float& _phong_bg, const float& _phong_diffuse, const float& _phong_specular, const float& _phong_exponent) :
+    PhongMaterial::PhongMaterial(const Color& _diffuse_color, const Color& _specular_color, const float& _phong_bg, const float& _phong_diffuse, const float& _phong_specular, const float& _phong_exponent) :
         diffuse_color(_diffuse_color),
         specular_color(_specular_color),
         phong_bg(_phong_bg),
@@ -13,7 +13,7 @@ namespace Primitives {
         phong_exponent(_phong_exponent)
     {}
 
-    Color Material::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection) const {
+    Color PhongMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection) const {
         Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
 
         // Detect shadow
@@ -27,11 +27,16 @@ namespace Primitives {
 
         if (!light_intersection.hit) {
 
-            Primitives::Color diffuse = intersection.material.diffuse_color * intersection.material.phong_diffuse * World::GetLight().GetIntensity() * (dir_to_light * intersection.normal);
-            Primitives::Color specular = intersection.material.specular_color * intersection.material.phong_specular * World::GetLight().GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), intersection.material.phong_exponent);
+            Primitives::Color diffuse = diffuse_color * phong_diffuse * World::GetLight().GetIntensity() * (dir_to_light * intersection.normal);
+            Primitives::Color specular = specular_color * phong_specular * World::GetLight().GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), phong_exponent);
             return (diffuse + specular);
         }
 
         return Color(0.0f, 0.0f, 0.0f);
+    }
+
+
+    Color TilingMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection) const {
+        return Color(1.0f, 0.0f, 0.0f);
     }
 }

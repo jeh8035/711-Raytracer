@@ -14,13 +14,13 @@ namespace Primitives {
     struct IntersectionInfo;
     class Object : public Transformable {
         public:
-            Object(const Material& _material);
+            Object(const std::shared_ptr<Material>& _material);
 
             virtual IntersectionInfo Intersect(const Ray& ray) const = 0;
 
-            const Material& GetMaterial() const {return material;}
+            const std::shared_ptr<Material>& GetMaterial() const {return material;}
         protected:
-            Material material;
+            std::shared_ptr<Material> material;
     };
 
 
@@ -30,7 +30,7 @@ namespace Primitives {
             Point position;
 
         public:
-            Sphere(const Material& _material, const float& _radius, const Point& _position);
+            Sphere(const std::shared_ptr<Material>& _material, const float& _radius, const Point& _position);
 
             virtual IntersectionInfo Intersect(const Ray& ray) const;
             virtual void Transform(const algebra::Matrix4f& matrix);
@@ -43,7 +43,7 @@ namespace Primitives {
             Point vert3;
 
         public:
-            Triangle(const Material& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3);
+            Triangle(const std::shared_ptr<Material>& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3);
             virtual IntersectionInfo Intersect(const Ray& ray) const;
             virtual void Transform(const algebra::Matrix4f& matrix);
     };
@@ -55,7 +55,7 @@ namespace Primitives {
             float radius;
 
         public:
-            Cylinder(const Material& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius);
+            Cylinder(const std::shared_ptr<Material>& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius);
 
             virtual IntersectionInfo Intersect(const Ray& ray) const;
             virtual void Transform(const algebra::Matrix4f& matrix);

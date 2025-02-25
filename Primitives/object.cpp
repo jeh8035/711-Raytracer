@@ -3,12 +3,12 @@
 
 namespace Primitives {
 
-    Object::Object(const Material& _material) :
+    Object::Object(const std::shared_ptr<Material>& _material) :
         material(_material)
     {}
 
 #pragma region Sphere
-    Sphere::Sphere(const Material& _material, const float& _radius, const Point& _position) :
+    Sphere::Sphere(const std::shared_ptr<Material>& _material, const float& _radius, const Point& _position) :
         Object(_material),
         radius(_radius),
         position(_position)
@@ -51,7 +51,7 @@ namespace Primitives {
 #pragma endregion
 
 #pragma region Triangle
-    Triangle::Triangle(const Material& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) :
+    Triangle::Triangle(const std::shared_ptr<Material>& _material, const Point& _vert1, const Point& _vert2, const Point& _vert3) :
         Object(_material),    
         vert1(_vert1),
         vert2(_vert2),
@@ -102,7 +102,7 @@ namespace Primitives {
 #pragma endregion
 
 #pragma region Cylinder
-    Cylinder::Cylinder(const Material& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) :
+    Cylinder::Cylinder(const std::shared_ptr<Material>& _material, const Point& _endpoint1, const Point& _endpoint2, const float& _radius) :
         Object(_material),
         endpoint1(_endpoint1),
         endpoint2(_endpoint2),
