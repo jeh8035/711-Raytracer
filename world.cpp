@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <thread>
+#include <fstream>
 
 Primitives::Camera World::camera;
 std::vector<std::shared_ptr<Primitives::Object>> World::objects;
@@ -190,6 +191,49 @@ void World::CreateObjects() {
         Primitives::Point({0.2f, 0.4f, 3.6f}),
         0.3f
     ));
+
+    // // Bunny model
+
+    // // Load model
+    // std::ifstream file;
+    // file.open("data/bun000.ply");
+    // // Skip header
+    // std::string line;
+    // u_int32_t vertex_count;
+    // while (std::getline(file, line)) {
+    //     if (line.substr(0, 14) == "element vertex") {
+    //         vertex_count = std::stoi(line.substr(14));
+    //     }
+
+    //     if (line == "end_header") {
+    //         break;
+    //     }
+    // }
+
+    // u_int32_t coord_index = 0;
+    // float coordinates[9];
+
+    // for (u_int32_t i = 0; i < vertex_count; i++) {
+    //     std::getline(file, line);
+
+    //     std::stringstream stream = std::stringstream(line);
+    //     std::string num;
+    //     while (std::getline(stream, num, ' ')) {
+    //         coordinates[coord_index] = std::stof(num);
+    //         coord_index++;
+    //     }
+        
+    //     if (coord_index % 9 == 0) {
+    //         objects.emplace_back( new Primitives::Triangle(
+    //             material1,
+    //             Primitives::Point({coordinates[0], coordinates[1], coordinates[2]}),
+    //             Primitives::Point({coordinates[3], coordinates[4], coordinates[5]}),
+    //             Primitives::Point({coordinates[6], coordinates[7], coordinates[8]})
+    //         ));
+    //         coord_index = 0;
+    //     }
+    // }
+    
 
     // Lights
     light = Primitives::Light(

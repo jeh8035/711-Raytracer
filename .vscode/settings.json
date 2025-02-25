@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.yarnproject": "jsonc",
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
@@ -57,6 +58,18 @@
         "text_encoding": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
-    }
+        "variant": "cpp",
+        "ratio": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/julian/Documents/Classes/CSCI 711/711-Raytracer",
+            "binaryPath": "/home/julian/Documents/Classes/CSCI 711/711-Raytracer/main",
+            "binaryArgs": []
+        }
+    ],
+    "makefile.makefilePath": ""
 }

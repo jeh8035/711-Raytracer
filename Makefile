@@ -27,9 +27,9 @@ $(TARGET): $(OBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Rule to run the executable
-run: $(TARGET)
-	./$(TARGET)
+# # Rule to run the executable
+# run: $(TARGET)
+# 	./$(TARGET)
 
 # Clean rule to remove generated files
 clean:
