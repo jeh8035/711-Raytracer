@@ -142,7 +142,14 @@ void World::CreateObjects() {
         10.0f
     ));
 
-    materials.emplace_back(new Primitives::TilingMaterial());
+    materials.emplace_back(new Primitives::TilingMaterial(
+        Primitives::Color(0.0f, 1.0f, 1.0f),
+        Primitives::Color(1.0f, 0.0f, 0.0f),
+        0.0f,
+        0.1f,
+        0.9f,
+        2.0f
+    ));
 
     // materials.emplace_back(new Primitives::PhongMaterial(
     //     Primitives::Color(0.0f, 1.0f, 0.0f),
@@ -177,16 +184,16 @@ void World::CreateObjects() {
 
     objects.emplace_back( new Primitives::Triangle(
         materials[2],
+        Primitives::Point({0.0f, 0.0f, 0.0f}),
         Primitives::Point({4.5f, 0.0f, 0.0f}),
-        Primitives::Point({0.0f, 0.0f, 11.5f}),
-        Primitives::Point({0.0f, 0.0f, 0.0f})
+        Primitives::Point({0.0f, 0.0f, 11.5f})
     ));
 
     objects.emplace_back( new Primitives::Triangle(
         materials[2],
-        Primitives::Point({4.5, 0.0, 0.0}),
         Primitives::Point({4.5, 0.0, 11.5}),
-        Primitives::Point({0.0, 0.0, 11.5})
+        Primitives::Point({0.0, 0.0, 11.5}),
+        Primitives::Point({4.5, 0.0, 0.0})
     ));
 
     objects.emplace_back( new Primitives::Cylinder(

@@ -13,6 +13,8 @@ namespace Primitives {
         float rayDist = 0.0f;
         Direction normal;
         std::shared_ptr<Material> material;
+        float u;
+        float v;
     };
 }
 

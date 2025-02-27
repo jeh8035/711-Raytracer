@@ -88,6 +88,8 @@ namespace Primitives {
             if (result.rayDist > 0.0) {
                 result.hit = true;
                 result.normal = -e1.cross(e2).normalize();
+                result.u = wuv.y();
+                result.v = wuv.z();
             }
         }
 
