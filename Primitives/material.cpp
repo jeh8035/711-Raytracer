@@ -48,12 +48,7 @@ namespace Primitives {
         bool horizontal = static_cast<int>(floor(intersection.u / 0.1f)) % 2 == 0;
         bool vertical = static_cast<int>(floor(intersection.v / 0.1f)) % 2 == 0;
 
-        bool squareType = (horizontal && vertical) || (!horizontal && !vertical);
-
-        Color color = color1;
-        if (squareType) {
-            color = color2;
-        }
+        Color color = (horizontal ^ vertical) ? color1 : color2;
 
         Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
 
