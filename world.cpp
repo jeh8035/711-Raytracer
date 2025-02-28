@@ -3,7 +3,6 @@
 #include "Primitives/intersection_info.h"
 #include "Libraries/libbmp/libbmp.h"
 
-#include <iostream>
 #include <thread>
 
 Primitives::Camera World::camera;
@@ -129,17 +128,17 @@ void World::CreateObjects() {
         Primitives::Color(1.0f, 0.0f, 0.0f)
     ));
 
-    // textures.emplace_back(new Primitives::TilingTexture(
-    //     Primitives::Color(0.0f, 1.0f, 1.0f),
-    //     Primitives::Color(1.0f, 0.0f, 0.0f)
-    // ));
-
-    textures.emplace_back(new Primitives::ImageTexture(
-        "images/texture1.bmp"
+    textures.emplace_back(new Primitives::TilingTexture(
+        Primitives::Color(0.0f, 1.0f, 1.0f),
+        Primitives::Color(1.0f, 0.0f, 0.0f)
     ));
 
     textures.emplace_back(new Primitives::PlainTexture(
         Primitives::Color(0.0f, 0.0f, 1.0f)
+    ));
+
+    textures.emplace_back(new Primitives::ImageTexture(
+        "images/texture1.bmp"
     ));
 
     // Materials
@@ -153,7 +152,7 @@ void World::CreateObjects() {
     ));
 
     materials.emplace_back(new Primitives::PhongMaterial(
-        textures[0],
+        textures[3],
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
         0.5f,

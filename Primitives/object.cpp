@@ -43,6 +43,9 @@ namespace Primitives {
                 result.hit = true;
                 auto intersect_position = ray.GetDirection() * result.rayDist;
                 result.normal = (intersect_position - position).normalize();
+
+                result.u = atan2(result.normal.x(), result.normal.z()) / (M_PI * 2.0f) + 0.5f;
+                result.v = result.normal.y() * 0.5f + 0.5f;
             }
         }
 
