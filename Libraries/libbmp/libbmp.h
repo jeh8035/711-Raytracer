@@ -2,6 +2,8 @@
 #define __LIBBMP_H__
 
 #include <vector>
+#include <fstream>
+#include <string>
 
 #define BMP_MAGIC 19778
 
@@ -42,11 +44,11 @@ class BmpPixbuf
 		                const unsigned char b);
 		
 		unsigned char red_at (const int x,
-		                      const int y);
+		                      const int y) const;
 		unsigned char green_at (const int x,
-		                        const int y);
+		                        const int y) const;
 		unsigned char blue_at (const int x,
-		                       const int y);
+		                       const int y) const;
 		
 		
 		void write (const int row,
@@ -76,8 +78,8 @@ class BmpImg : public BmpPixbuf
 		enum BmpError write (const std::string& filename);
 		enum BmpError read (const std::string& filename);
 		
-		int get_width (void);
-		int get_height (void);
+		int get_width (void) const;
+		int get_height (void) const;
 	private:
 		// Use a struct to read this in one call
 		struct

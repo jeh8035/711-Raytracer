@@ -48,21 +48,21 @@ BmpPixbuf::set_pixel (const int x,
 
 unsigned char
 BmpPixbuf::red_at (const int x,
-                   const int y)
+                   const int y) const
 {
 	return data[(x * len_pixel) + (y * len_row) + 2];
 }
 
 unsigned char
 BmpPixbuf::green_at (const int x,
-                     const int y)
+                     const int y) const
 {
 	return data[(x * len_pixel) + (y * len_row) + 1];
 }
 
 unsigned char
 BmpPixbuf::blue_at (const int x,
-                    const int y)
+                    const int y) const
 {
 	return data[(x * len_pixel) + (y * len_row)];
 }
@@ -104,13 +104,13 @@ BmpImg::~BmpImg (void)
 }
 
 int
-BmpImg::get_width (void)
+BmpImg::get_width (void) const
 {
 	return header.biWidth;
 }
 
 int
-BmpImg::get_height (void)
+BmpImg::get_height (void) const
 {
 	return header.biHeight;
 }

@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <thread>
-#include <fstream>
 
 Primitives::Camera World::camera;
 std::vector<std::shared_ptr<Primitives::Object>> World::objects;
@@ -130,9 +129,13 @@ void World::CreateObjects() {
         Primitives::Color(1.0f, 0.0f, 0.0f)
     ));
 
-    textures.emplace_back(new Primitives::TilingTexture(
-        Primitives::Color(0.0f, 1.0f, 1.0f),
-        Primitives::Color(1.0f, 0.0f, 0.0f)
+    // textures.emplace_back(new Primitives::TilingTexture(
+    //     Primitives::Color(0.0f, 1.0f, 1.0f),
+    //     Primitives::Color(1.0f, 0.0f, 0.0f)
+    // ));
+
+    textures.emplace_back(new Primitives::ImageTexture(
+        "images/texture1.bmp"
     ));
 
     textures.emplace_back(new Primitives::PlainTexture(

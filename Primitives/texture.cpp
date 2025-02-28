@@ -22,11 +22,15 @@ namespace Primitives {
         return (horizontal ^ vertical) ? color1 : color2;
     }
 
-    ImageTexture::ImageTexture(const std::string& _filename) :
-        filename(_filename)
-    {}
+    ImageTexture::ImageTexture(const std::string& filename) {
+        img.read(filename);
+    }
 
     const Color ImageTexture::GetColor(const float& u, const float& v) const {
-        return Color(fmod(u * v, 1.0f), 0.0f, 0.0f);
+        return Color(
+            img.red_at(static_cast<u_int32_t>(u * img.get_width()), static_cast<u_int32_t>(v * img.get_height())) / 255.0f,
+            img.green_at(static_cast<u_int32_t>(u * img.get_width()), static_cast<u_int32_t>(v * img.get_height())) / 255.0f,
+            img.blue_at(static_cast<u_int32_t>(u * img.get_width()), static_cast<u_int32_t>(v * img.get_height())) / 255.0f
+        );
     }
 }

@@ -1,6 +1,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include "../Libraries/libbmp/libbmp.h"
+
 #include "primitives.h"
 
 namespace Primitives {
@@ -38,11 +40,11 @@ namespace Primitives {
 
     class ImageTexture : public Texture {
         private:
-            std::string filename;
+            BmpImg img;
 
         public:
             ImageTexture(){};
-            ImageTexture(const std::string& _filename);
+            ImageTexture(const std::string& filename);
 
             virtual const Color GetColor(const float& u, const float& v) const;
     };
