@@ -11,7 +11,7 @@ TARGET = main
 TARGET_DEL = main
 
 # Source files
-SRCS = main.cpp world.cpp Primitives/camera.cpp Primitives/light.cpp Primitives/material.cpp Primitives/object.cpp Primitives/primitives.cpp Libraries/tinyga/tinyga.cpp
+SRCS = main.cpp world.cpp Primitives/camera.cpp Primitives/light.cpp Primitives/material.cpp Primitives/object.cpp Primitives/primitives.cpp Libraries/libbmp/libbmp.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)

@@ -1,6 +1,7 @@
 #include "world.h"
 #include "Primitives/material.h"
 #include "Primitives/intersection_info.h"
+#include "Libraries/libbmp/libbmp.h"
 
 #include <iostream>
 #include <thread>
@@ -15,6 +16,7 @@ constexpr float World::aspect_ratio;
 constexpr uint32_t World::supersample_amount;
 constexpr float World::epsilon;
 std::vector<std::vector<Primitives::Color>> World::irradiances;
+std::vector<std::shared_ptr<Primitives::Texture>> World::textures;
 std::vector<std::shared_ptr<Primitives::Material>> World::materials;
 
 void World::SingleTrace(u_int32_t y) {
@@ -62,6 +64,7 @@ void World::SingleTrace(u_int32_t y) {
 void World::RayTrace() {
     irradiances = std::vector<std::vector<Primitives::Color>>(width, std::vector<Primitives::Color>(height, Primitives::Color(0.0f, 0.0f, 0.0f)));
     materials = std::vector<std::shared_ptr<Primitives::Material>>();
+    textures = std::vector<std::shared_ptr<Primitives::Texture>>();
 
     CreateObjects();
     TransformObjectsToCameraSpace();
@@ -79,22 +82,21 @@ void World::RayTrace() {
 
 
     // Create image
-    TGA image = TGANew(width, height, TGACOLOR(0,0,0));
+    BmpImg img(width, height);
 
     // Tone mapping
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
-            TGAColor color = TGACOLOR(
+            img.set_pixel(
+                x, height - y,
                 static_cast<uint8_t>(std::min(irradiances[x][y].red * 255.0f, 255.0f)),
                 static_cast<uint8_t>(std::min(irradiances[x][y].green * 255.0f, 255.0f)),
                 static_cast<uint8_t>(std::min(irradiances[x][y].blue * 255.0f, 255.0f))
             );
-            // Set pixel color
-            TGASetPixel(&image, x, y, color);
         }
     }
 
-    TGADumpFile(&image, "out.tga");
+    img.write("out.bmp");
 }
 
 Primitives::IntersectionInfo World::CastRay(const Primitives::Ray& ray) {
@@ -123,9 +125,23 @@ void World::CreateObjects() {
         0.2f
     );
 
+    //Textures
+    textures.emplace_back(new Primitives::PlainTexture(
+        Primitives::Color(1.0f, 0.0f, 0.0f)
+    ));
+
+    textures.emplace_back(new Primitives::TilingTexture(
+        Primitives::Color(0.0f, 1.0f, 1.0f),
+        Primitives::Color(1.0f, 0.0f, 0.0f)
+    ));
+
+    textures.emplace_back(new Primitives::PlainTexture(
+        Primitives::Color(0.0f, 0.0f, 1.0f)
+    ));
+
     // Materials
     materials.emplace_back(new Primitives::PhongMaterial(
-        Primitives::Color(1.0f, 0.0f, 0.0f),
+        textures[0],
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
         0.5f,
@@ -134,7 +150,7 @@ void World::CreateObjects() {
     ));
 
     materials.emplace_back(new Primitives::PhongMaterial(
-        Primitives::Color(1.0f, 0.0f, 0.0f),
+        textures[0],
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
         0.5f,
@@ -142,26 +158,17 @@ void World::CreateObjects() {
         10.0f
     ));
 
-    materials.emplace_back(new Primitives::TilingMaterial(
-        Primitives::Color(0.0f, 1.0f, 1.0f),
-        Primitives::Color(1.0f, 0.0f, 0.0f),
+    materials.emplace_back(new Primitives::PhongMaterial(
+        textures[1],
+        Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
-        0.1f,
         0.9f,
+        0.1f,
         2.0f
     ));
 
-    // materials.emplace_back(new Primitives::PhongMaterial(
-    //     Primitives::Color(0.0f, 1.0f, 0.0f),
-    //     Primitives::Color(1.0f, 1.0f, 1.0f),
-    //     0.0f,
-    //     0.1f,
-    //     0.9f,
-    //     10.0f
-    // ));
-
     materials.emplace_back(new Primitives::PhongMaterial(
-        Primitives::Color(0.0f, 0.0f, 1.0f),
+        textures[2],
         Primitives::Color(1.0f, 1.0f, 1.0f),
         0.0f,
         0.9f,

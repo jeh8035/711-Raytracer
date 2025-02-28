@@ -1,9 +1,9 @@
-#include "Libraries/tinyga/tinyga.h"
 #include "Libraries/matrix/matrix.h"
 
 #include "Primitives/object.h"
 #include "Primitives/camera.h"
 #include "Primitives/light.h"
+#include "Primitives/texture.h"
 
 #include <memory>
 
@@ -23,6 +23,7 @@ class World {
 
         static std::vector<std::vector<Primitives::Color>> irradiances;
 
+        static std::vector<std::shared_ptr<Primitives::Texture>> textures;
         static std::vector<std::shared_ptr<Primitives::Material>> materials;
 
     public:

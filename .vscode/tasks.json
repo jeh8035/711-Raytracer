@@ -10,7 +10,7 @@
                 "-Wall",
                 "-g",
                 "*.cpp",
-                "Libraries/tinyga/*.cpp",
+                "Libraries/libbmp/*.cpp",
                 "Primitives/*.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
