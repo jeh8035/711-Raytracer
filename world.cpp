@@ -144,49 +144,51 @@ void World::CreateObjects() {
     ));
 
     // Materials
-    // materials.emplace_back(new Primitives::PhongMaterial(
-    //     texture_red,
-    //     Primitives::Color(1.0f, 1.0f, 1.0f),
-    //     0.0f,
-    //     0.5f,
-    //     0.5f,
-    //     10.0f
-    // ));
-
-    // materials.emplace_back(new Primitives::PhongMaterial(
-    //     texture_img,
-    //     Primitives::Color(1.0f, 1.0f, 1.0f),
-    //     0.0f,
-    //     0.5f,
-    //     0.5f,
-    //     10.0f
-    // ));
-
-    // materials.emplace_back(new Primitives::PhongMaterial(
-    //     texture_tiled,
-    //     Primitives::Color(1.0f, 1.0f, 1.0f),
-    //     0.0f,
-    //     0.9f,
-    //     0.1f,
-    //     2.0f
-    // ));
-
-    // materials.emplace_back(new Primitives::PhongMaterial(
-    //     texture_blue,
-    //     Primitives::Color(1.0f, 1.0f, 1.0f),
-    //     0.0f,
-    //     0.9f,
-    //     0.1f,
-    //     10.0f
-    // ));
-
-    // Sphere 1
-    auto sphere1_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
+    auto sphere1_mat = materials.emplace_back(new Primitives::PhongMaterial(
         texture_red,
+        Primitives::Color(1.0, 1.0, 1.0),
+        0.5f,
+        0.5f,
+        10.0f,
         1.0f,
         0.0f,
         5
     ));
+
+    auto sphere2_mat = materials.emplace_back(new Primitives::PhongMaterial(
+        texture_img,
+        Primitives::Color(1.0, 1.0, 1.0),
+        0.5f,
+        0.5f,
+        10.0f,
+        0.0f,
+        0.0f,
+        5
+    ));
+
+    auto floor_mat = materials.emplace_back(new Primitives::PhongMaterial(
+        texture_tiled,
+        Primitives::Color(1.0, 1.0, 1.0),
+        1.0f,
+        0.0f,
+        10.0f,
+        0.9f,
+        0.0f,
+        5
+    ));
+
+    auto cylinder_mat = materials.emplace_back(new Primitives::PhongMaterial(
+        texture_blue,
+        Primitives::Color(1.0, 1.0, 1.0),
+        0.5f,
+        0.5f,
+        10.0f,
+        1.0f,
+        0.0f,
+        5
+    ));
+
+    // Sphere 1
     objects.emplace_back( new Primitives::Sphere(
         sphere1_mat,
         0.8f,
@@ -194,12 +196,6 @@ void World::CreateObjects() {
     ));
 
     // Sphere 2
-    auto sphere2_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
-        texture_img,
-        0.0f,
-        0.0f,
-        5
-    ));
     objects.emplace_back( new Primitives::Sphere(
         sphere2_mat,
         0.5f,
@@ -207,12 +203,6 @@ void World::CreateObjects() {
     ));
 
     // Floor
-    auto floor_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
-        texture_tiled,
-        0.9f,
-        0.0f,
-        5
-    ));
     objects.emplace_back( new Primitives::Triangle(
         floor_mat,
         Primitives::Point({0.0f, 0.0f, 0.0f}),
@@ -228,12 +218,6 @@ void World::CreateObjects() {
     ));
 
     // Cylinder
-    auto cylinder_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
-        texture_blue,
-        1.0f,
-        0.0f,
-        5
-    ));
     objects.emplace_back( new Primitives::Cylinder(
         cylinder_mat,
         Primitives::Point({0.0f, 2.4f, 2.5f}),

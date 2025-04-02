@@ -8,69 +8,44 @@ namespace Primitives {
         texture(_texture)
     {}
 
-    PhongMaterial::PhongMaterial(const std::shared_ptr<Texture> _texture, const Color& _specular_color, const float& _phong_bg, const float& _phong_diffuse, const float& _phong_specular, const float& _phong_exponent) :
+    PhongMaterial::PhongMaterial(const std::shared_ptr<Texture> _texture, const Color& _specular_color, const float& _phong_diffuse, const float& _phong_specular, const float& _phong_exponent, const float& _reflection_constant, const float& _transmission_constant, const int& _max_depth) :
         Material(_texture),
         specular_color(_specular_color),
-        phong_bg(_phong_bg),
         phong_diffuse(_phong_diffuse),
         phong_specular(_phong_specular),
-        phong_exponent(_phong_exponent)
-    {}
-
-    Color PhongMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth) const {
-        Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
-
-        // Detect shadow
-        Primitives::Direction dir_to_light = (World::GetLight().GetPosition() - intersection_point).normalize();
-
-        Primitives::Ray ray_to_light = Primitives::Ray(
-            intersection_point + (intersection.normal * World::GetEpsilon()),
-            (World::GetLight().GetPosition() - intersection_point).normalize()
-        );
-        Primitives::IntersectionInfo light_intersection = World::CastRay(ray_to_light);
-
-        if (!light_intersection.hit) {
-
-            Primitives::Color diffuse = texture->GetColor(intersection.u, intersection.v) * phong_diffuse * World::GetLight().GetIntensity() * (dir_to_light * intersection.normal);
-            Primitives::Color specular = specular_color * phong_specular * World::GetLight().GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), phong_exponent);
-            return (diffuse + specular);
-        }
-
-        return Color(0.0f, 0.0f, 0.0f);
-    }
-
-    RayTracedMaterial::RayTracedMaterial(const std::shared_ptr<Texture> _texture, const float& _reflection_constant, const float& _transmission_constant, const int& _max_depth) :
-        Material(_texture),
+        phong_exponent(_phong_exponent),
         reflection_constant(_reflection_constant),
         transmission_constant(_transmission_constant),
         max_depth(_max_depth)
     {}
 
-    Color RayTracedMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth) const {
+    Color PhongMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth) const {
         if (depth >= max_depth) {
             return Color(0.0f, 0.0f, 0.0f);
         }
 
-        Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
-        Primitives::Point adjusted_intersection_point = intersection_point + (intersection.normal * World::GetEpsilon());
-
-
+        const Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
+        const Primitives::Point adjusted_intersection_point = intersection_point + (intersection.normal * World::GetEpsilon());
+        const Primitives::Direction dir_to_light = (World::GetLight().GetPosition() - intersection_point).normalize();
 
         // Color for this ray
         Primitives::Color color = texture->GetColor(intersection.u, intersection.v);
 
         // Shadow ray
-        //Primitives::Direction dir_to_light = (World::GetLight().GetPosition() - intersection_point).normalize();
-
-        Primitives::Ray ray_to_light = Primitives::Ray(
+        const Primitives::Ray ray_to_light = Primitives::Ray(
             adjusted_intersection_point,
             (World::GetLight().GetPosition() - intersection_point).normalize()
         );
-        Primitives::IntersectionInfo light_intersection = World::CastRay(ray_to_light);
+        const Primitives::IntersectionInfo light_intersection = World::CastRay(ray_to_light);
 
         // If shadow ray hits
         if (light_intersection.hit) {
             color = Primitives::Color(0.0f, 0.0f, 0.0f);
+        } else {
+            // Calculate color from phong
+            Primitives::Color diffuse = texture->GetColor(intersection.u, intersection.v) * phong_diffuse * World::GetLight().GetIntensity() * (dir_to_light * intersection.normal);
+            Primitives::Color specular = specular_color * phong_specular * World::GetLight().GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), phong_exponent);
+            color = diffuse + specular;
         }
 
         if (reflection_constant > 0.0f) {
