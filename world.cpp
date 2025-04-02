@@ -68,28 +68,30 @@ void World::RayTrace() {
     TransformObjectsToCameraSpace();
 
     // Cast rays
-    static std::vector<std::thread> threads;
+    //static std::vector<std::thread> threads;
     
     for (uint32_t y = 0; y < height; y++) {
-        threads.emplace_back(std::thread(SingleTrace, y));
+        SingleTrace(y);
+        //threads.emplace_back(std::thread(SingleTrace, y));
     }
 
-    for (std::thread& thread : threads) {
-        thread.join();
-    }
+    // for (std::thread& thread : threads) {
+    //     thread.join();
+    // }
 
 
     // Create image
     BmpImg img(width, height);
 
     // Tone mapping
+    const float irradiance_multiplier = 128.0f;
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
             img.set_pixel(
                 x, height - y,
-                static_cast<uint8_t>(std::min(irradiances[x][y].red * 255.0f, 255.0f)),
-                static_cast<uint8_t>(std::min(irradiances[x][y].green * 255.0f, 255.0f)),
-                static_cast<uint8_t>(std::min(irradiances[x][y].blue * 255.0f, 255.0f))
+                static_cast<uint8_t>(std::min(irradiances[x][y].red * irradiance_multiplier, 255.0f)),
+                static_cast<uint8_t>(std::min(irradiances[x][y].green * irradiance_multiplier, 255.0f)),
+                static_cast<uint8_t>(std::min(irradiances[x][y].blue * irradiance_multiplier, 255.0f))
             );
         }
     }
@@ -124,89 +126,116 @@ void World::CreateObjects() {
     );
 
     //Textures
-    textures.emplace_back(new Primitives::PlainTexture(
+    auto texture_red = textures.emplace_back(new Primitives::PlainTexture(
         Primitives::Color(1.0f, 0.0f, 0.0f)
     ));
 
-    textures.emplace_back(new Primitives::TilingTexture(
+    auto texture_tiled = textures.emplace_back(new Primitives::TilingTexture(
         Primitives::Color(0.0f, 1.0f, 1.0f),
         Primitives::Color(1.0f, 0.0f, 0.0f)
     ));
 
-    textures.emplace_back(new Primitives::PlainTexture(
+    auto texture_blue = textures.emplace_back(new Primitives::PlainTexture(
         Primitives::Color(0.0f, 0.0f, 1.0f)
     ));
 
-    textures.emplace_back(new Primitives::ImageTexture(
+    auto texture_img = textures.emplace_back(new Primitives::ImageTexture(
         "images/texture1.bmp"
     ));
 
     // Materials
-    materials.emplace_back(new Primitives::PhongMaterial(
-        textures[0],
-        Primitives::Color(1.0f, 1.0f, 1.0f),
-        0.0f,
-        0.5f,
-        0.5f,
-        10.0f
-    ));
+    // materials.emplace_back(new Primitives::PhongMaterial(
+    //     texture_red,
+    //     Primitives::Color(1.0f, 1.0f, 1.0f),
+    //     0.0f,
+    //     0.5f,
+    //     0.5f,
+    //     10.0f
+    // ));
 
-    materials.emplace_back(new Primitives::PhongMaterial(
-        textures[3],
-        Primitives::Color(1.0f, 1.0f, 1.0f),
-        0.0f,
-        0.5f,
-        0.5f,
-        10.0f
-    ));
+    // materials.emplace_back(new Primitives::PhongMaterial(
+    //     texture_img,
+    //     Primitives::Color(1.0f, 1.0f, 1.0f),
+    //     0.0f,
+    //     0.5f,
+    //     0.5f,
+    //     10.0f
+    // ));
 
-    materials.emplace_back(new Primitives::PhongMaterial(
-        textures[1],
-        Primitives::Color(1.0f, 1.0f, 1.0f),
-        0.0f,
-        0.9f,
-        0.1f,
-        2.0f
-    ));
+    // materials.emplace_back(new Primitives::PhongMaterial(
+    //     texture_tiled,
+    //     Primitives::Color(1.0f, 1.0f, 1.0f),
+    //     0.0f,
+    //     0.9f,
+    //     0.1f,
+    //     2.0f
+    // ));
 
-    materials.emplace_back(new Primitives::PhongMaterial(
-        textures[2],
-        Primitives::Color(1.0f, 1.0f, 1.0f),
-        0.0f,
-        0.9f,
-        0.1f,
-        10.0f
-    ));
+    // materials.emplace_back(new Primitives::PhongMaterial(
+    //     texture_blue,
+    //     Primitives::Color(1.0f, 1.0f, 1.0f),
+    //     0.0f,
+    //     0.9f,
+    //     0.1f,
+    //     10.0f
+    // ));
 
-    // Objects
+    // Sphere 1
+    auto sphere1_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
+        texture_red,
+        1.0f,
+        0.0f,
+        5
+    ));
     objects.emplace_back( new Primitives::Sphere(
-        materials[0],
-        0.5f,
+        sphere1_mat,
+        0.8f,
         Primitives::Point({1.4f, 1.8f, 3.0f})
     ));
 
-   objects.emplace_back( new Primitives::Sphere(
-        materials[1],
+    // Sphere 2
+    auto sphere2_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
+        texture_img,
+        0.0f,
+        0.0f,
+        5
+    ));
+    objects.emplace_back( new Primitives::Sphere(
+        sphere2_mat,
         0.5f,
         Primitives::Point({1.0f, 2.4f, 1.5f})
     ));
 
+    // Floor
+    auto floor_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
+        texture_tiled,
+        0.9f,
+        0.0f,
+        5
+    ));
     objects.emplace_back( new Primitives::Triangle(
-        materials[2],
+        floor_mat,
         Primitives::Point({0.0f, 0.0f, 0.0f}),
         Primitives::Point({4.5f, 0.0f, 0.0f}),
         Primitives::Point({0.0f, 0.0f, 11.5f})
     ));
 
     objects.emplace_back( new Primitives::Triangle(
-        materials[2],
+        floor_mat,
         Primitives::Point({4.5, 0.0, 11.5}),
         Primitives::Point({0.0, 0.0, 11.5}),
         Primitives::Point({4.5, 0.0, 0.0})
     ));
 
+    // Cylinder
+    auto cylinder_mat = materials.emplace_back(new Primitives::RayTracedMaterial(
+        texture_blue,
+        1.0f,
+        0.0f,
+        5
+    ));
     objects.emplace_back( new Primitives::Cylinder(
-        materials[3],
+        cylinder_mat,
         Primitives::Point({0.0f, 2.4f, 2.5f}),
         Primitives::Point({0.2f, 0.4f, 3.6f}),
         0.3f

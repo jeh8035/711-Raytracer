@@ -17,7 +17,7 @@ namespace Primitives {
         phong_exponent(_phong_exponent)
     {}
 
-    Color PhongMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection) const {
+    Color PhongMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth) const {
         Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
 
         // Detect shadow
@@ -37,5 +37,58 @@ namespace Primitives {
         }
 
         return Color(0.0f, 0.0f, 0.0f);
+    }
+
+    RayTracedMaterial::RayTracedMaterial(const std::shared_ptr<Texture> _texture, const float& _reflection_constant, const float& _transmission_constant, const int& _max_depth) :
+        Material(_texture),
+        reflection_constant(_reflection_constant),
+        transmission_constant(_transmission_constant),
+        max_depth(_max_depth)
+    {}
+
+    Color RayTracedMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth) const {
+        if (depth >= max_depth) {
+            return Color(0.0f, 0.0f, 0.0f);
+        }
+
+        Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
+        Primitives::Point adjusted_intersection_point = intersection_point + (intersection.normal * World::GetEpsilon());
+
+
+
+        // Color for this ray
+        Primitives::Color color = texture->GetColor(intersection.u, intersection.v);
+
+        // Shadow ray
+        //Primitives::Direction dir_to_light = (World::GetLight().GetPosition() - intersection_point).normalize();
+
+        Primitives::Ray ray_to_light = Primitives::Ray(
+            adjusted_intersection_point,
+            (World::GetLight().GetPosition() - intersection_point).normalize()
+        );
+        Primitives::IntersectionInfo light_intersection = World::CastRay(ray_to_light);
+
+        // If shadow ray hits
+        if (light_intersection.hit) {
+            color = Primitives::Color(0.0f, 0.0f, 0.0f);
+        }
+
+        if (reflection_constant > 0.0f) {
+            // Reflect ray
+            Primitives::Ray reflected_ray = Primitives::Ray(
+                adjusted_intersection_point,
+                Primitives::ReflectRay(ray.GetDirection(), intersection.normal)
+            );
+            Primitives::IntersectionInfo reflection_result = World::CastRay(reflected_ray);
+            
+            // Result
+            Primitives::Color reflection_color;
+            if (reflection_result.hit) reflection_color = reflection_result.material->GetColor(reflected_ray, reflection_result, depth + 1);
+            else reflection_color = Color(0.0f, 0.0f, 0.0f);
+
+            return reflection_color * reflection_constant + color;
+        }
+
+        return color;
     }
 }
