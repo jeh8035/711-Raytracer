@@ -68,23 +68,23 @@ void World::RayTrace() {
     TransformObjectsToCameraSpace();
 
     // Cast rays
-    //static std::vector<std::thread> threads;
+    static std::vector<std::thread> threads;
     
     for (uint32_t y = 0; y < height; y++) {
-        SingleTrace(y);
-        //threads.emplace_back(std::thread(SingleTrace, y));
+        //SingleTrace(y);
+        threads.emplace_back(std::thread(SingleTrace, y));
     }
 
-    // for (std::thread& thread : threads) {
-    //     thread.join();
-    // }
+    for (std::thread& thread : threads) {
+        thread.join();
+    }
 
 
     // Create image
     BmpImg img(width, height);
 
     // Tone mapping
-    const float irradiance_multiplier = 128.0f;
+    const float irradiance_multiplier = 256.0f;
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
             img.set_pixel(
@@ -150,7 +150,7 @@ void World::CreateObjects() {
         0.5f,
         0.5f,
         10.0f,
-        1.0f,
+        0.7f,
         0.0f,
         5
     ));
@@ -169,10 +169,10 @@ void World::CreateObjects() {
     auto floor_mat = materials.emplace_back(new Primitives::PhongMaterial(
         texture_tiled,
         Primitives::Color(1.0, 1.0, 1.0),
-        1.0f,
-        0.0f,
+        0.5f,
+        0.5f,
         10.0f,
-        0.9f,
+        0.0f,
         0.0f,
         5
     ));
@@ -183,7 +183,7 @@ void World::CreateObjects() {
         0.5f,
         0.5f,
         10.0f,
-        1.0f,
+        0.7f,
         0.0f,
         5
     ));

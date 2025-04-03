@@ -24,25 +24,22 @@ namespace Primitives {
             return Color(0.0f, 0.0f, 0.0f);
         }
 
-        const Primitives::Point intersection_point = intersection.rayDist * ray.GetDirection();
+        const Primitives::Point intersection_point = ray.GetPosition() + intersection.rayDist * ray.GetDirection();
         const Primitives::Point adjusted_intersection_point = intersection_point + (intersection.normal * World::GetEpsilon());
         const Primitives::Direction dir_to_light = (World::GetLight().GetPosition() - intersection_point).normalize();
 
         // Color for this ray
-        Primitives::Color color = texture->GetColor(intersection.u, intersection.v);
+        Primitives::Color color = Primitives::Color(0.0f, 0.0f, 0.0f);
 
         // Shadow ray
         const Primitives::Ray ray_to_light = Primitives::Ray(
             adjusted_intersection_point,
-            (World::GetLight().GetPosition() - intersection_point).normalize()
+            dir_to_light
         );
         const Primitives::IntersectionInfo light_intersection = World::CastRay(ray_to_light);
 
-        // If shadow ray hits
-        if (light_intersection.hit) {
-            color = Primitives::Color(0.0f, 0.0f, 0.0f);
-        } else {
-            // Calculate color from phong
+        // If shadow ray doesn't hit, calculate phong
+        if (!light_intersection.hit) {
             Primitives::Color diffuse = texture->GetColor(intersection.u, intersection.v) * phong_diffuse * World::GetLight().GetIntensity() * (dir_to_light * intersection.normal);
             Primitives::Color specular = specular_color * phong_specular * World::GetLight().GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), phong_exponent);
             color = diffuse + specular;
