@@ -17,6 +17,11 @@ namespace Primitives {
         return ray - 2 * ((ray * normal) / normal.norm_squared()) * normal;
     }
 
+    Direction RefractRay(Direction ray, Direction normal, float iof1, float iof2) {
+        // TODO
+        return ray;
+    }
+
 
     Color::Color(const float& _red, const float& _green, const float& _blue) :
         red(_red),

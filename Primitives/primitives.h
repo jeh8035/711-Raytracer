@@ -41,6 +41,7 @@ namespace Primitives {
 
 
     Direction ReflectRay(Direction ray, Direction normal);
+    Direction RefractRay(Direction ray, Direction normal, float iof1, float iof2);
 }
 
 #endif

@@ -152,6 +152,7 @@ void World::CreateObjects() {
         10.0f,
         0.7f,
         0.0f,
+        2.0f,
         5
     ));
 
@@ -163,6 +164,7 @@ void World::CreateObjects() {
         10.0f,
         0.0f,
         0.0f,
+        2.0f,
         5
     ));
 
@@ -174,6 +176,7 @@ void World::CreateObjects() {
         10.0f,
         0.0f,
         0.0f,
+        2.0f,
         5
     ));
 
@@ -185,6 +188,7 @@ void World::CreateObjects() {
         10.0f,
         0.7f,
         0.0f,
+        2.0f,
         5
     ));
 
