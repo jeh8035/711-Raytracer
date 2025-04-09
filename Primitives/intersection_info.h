@@ -9,12 +9,13 @@
 namespace Primitives {
     // Information returned from a ray hit
     struct IntersectionInfo {
-        bool hit = false;
+        bool hit = 0;
+        bool is_inside = false;
         float rayDist = 0.0f;
-        Direction normal;
-        std::shared_ptr<Material> material;
         float u;
         float v;
+        Direction normal;
+        std::shared_ptr<Material> material;
     };
 }
 

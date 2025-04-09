@@ -46,8 +46,6 @@ namespace Primitives {
             color = diffuse + specular;
         }
 
-        Primitives::Color reflectColor = Primitives::Color(0.0f, 0.0f, 0.0f);
-
         if (reflection_constant > 0.0f) {
             // Reflect ray
             Primitives::Ray reflected_ray = Primitives::Ray(
@@ -66,14 +64,28 @@ namespace Primitives {
 
         if (transmission_constant > 0.0f) {
             // Transmission ray
+            Primitives::Direction refract_ray;
+            Primitives::Point inner_intersection_point = intersection_point;
+            if (intersection.is_inside) {
+                refract_ray = Primitives::RefractRay(ray.GetDirection(), -intersection.normal, index_of_refraction, 1.0f);
+                inner_intersection_point += (intersection.normal * World::GetEpsilon());
+            } else {
+                refract_ray = Primitives::RefractRay(ray.GetDirection(), intersection.normal, 1.0f, index_of_refraction);
+                inner_intersection_point -= (intersection.normal * World::GetEpsilon());
+            }
+
             Primitives::Ray trans_ray = Primitives::Ray(
-                adjusted_intersection_point,
-                Primitives::RefractRay(ray.GetDirection(), intersection.normal, 1.0f, index_of_refraction)
+                inner_intersection_point,
+                refract_ray
             );
             Primitives::IntersectionInfo trans_result = World::CastRay(trans_ray);
+            trans_result.is_inside = !intersection.is_inside;
 
+            Primitives::Color transmissive_color;
+            if (trans_result.hit) transmissive_color = trans_result.material->GetColor(trans_ray, trans_result, depth + 1);
+            else transmissive_color = Color(0.0f, 0.0f, 0.0f);
 
-            //color += ;
+            color += transmissive_color * transmission_constant;
         }
 
         return color;

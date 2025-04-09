@@ -71,13 +71,13 @@ void World::RayTrace() {
     static std::vector<std::thread> threads;
     
     for (uint32_t y = 0; y < height; y++) {
-        //SingleTrace(y);
-        threads.emplace_back(std::thread(SingleTrace, y));
+        SingleTrace(y);
+        //threads.emplace_back(std::thread(SingleTrace, y));
     }
 
-    for (std::thread& thread : threads) {
-        thread.join();
-    }
+    // for (std::thread& thread : threads) {
+    //     thread.join();
+    // }
 
 
     // Create image
@@ -163,8 +163,8 @@ void World::CreateObjects() {
         0.5f,
         10.0f,
         0.0f,
-        0.0f,
-        2.0f,
+        1.0f,
+        1.0f,
         5
     ));
 
