@@ -71,13 +71,13 @@ void World::RayTrace() {
     static std::vector<std::thread> threads;
     
     for (uint32_t y = 0; y < height; y++) {
-        SingleTrace(y);
-        //threads.emplace_back(std::thread(SingleTrace, y));
+        //SingleTrace(y);
+        threads.emplace_back(std::thread(SingleTrace, y));
     }
 
-    // for (std::thread& thread : threads) {
-    //     thread.join();
-    // }
+    for (std::thread& thread : threads) {
+        thread.join();
+    }
 
 
     // Create image
@@ -150,9 +150,9 @@ void World::CreateObjects() {
         0.5f,
         0.5f,
         10.0f,
-        0.7f,
         0.0f,
-        2.0f,
+        1.0f,
+        0.95f,
         5
     ));
 
@@ -163,9 +163,9 @@ void World::CreateObjects() {
         0.5f,
         10.0f,
         0.0f,
+        0.0f,
         1.0f,
-        1.0f,
-        5
+        10
     ));
 
     auto floor_mat = materials.emplace_back(new Primitives::PhongMaterial(
@@ -200,34 +200,34 @@ void World::CreateObjects() {
     ));
 
     // Sphere 2
-    objects.emplace_back( new Primitives::Sphere(
-        sphere2_mat,
-        0.5f,
-        Primitives::Point({1.0f, 2.4f, 1.5f})
-    ));
+    // objects.emplace_back( new Primitives::Sphere(
+    //     sphere2_mat,
+    //     0.5f,
+    //     Primitives::Point({1.0f, 2.4f, 1.5f})
+    // ));
 
     // Floor
     objects.emplace_back( new Primitives::Triangle(
         floor_mat,
         Primitives::Point({0.0f, 0.0f, 0.0f}),
         Primitives::Point({4.5f, 0.0f, 0.0f}),
-        Primitives::Point({0.0f, 0.0f, 11.5f})
+        Primitives::Point({0.0f, 0.0f, 21.5f})
     ));
 
     objects.emplace_back( new Primitives::Triangle(
         floor_mat,
-        Primitives::Point({4.5, 0.0, 11.5}),
-        Primitives::Point({0.0, 0.0, 11.5}),
+        Primitives::Point({4.5, 0.0, 21.5}),
+        Primitives::Point({0.0, 0.0, 21.5}),
         Primitives::Point({4.5, 0.0, 0.0})
     ));
 
     // Cylinder
-    objects.emplace_back( new Primitives::Cylinder(
-        cylinder_mat,
-        Primitives::Point({0.0f, 2.4f, 2.5f}),
-        Primitives::Point({0.2f, 0.4f, 3.6f}),
-        0.3f
-    ));
+    // objects.emplace_back( new Primitives::Cylinder(
+    //     cylinder_mat,
+    //     Primitives::Point({0.0f, 2.4f, 2.5f}),
+    //     Primitives::Point({0.2f, 0.4f, 3.6f}),
+    //     0.3f
+    // ));
 
     // // Bunny model
 

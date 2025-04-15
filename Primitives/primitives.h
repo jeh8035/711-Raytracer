@@ -40,8 +40,8 @@ namespace Primitives {
     };
 
 
-    Direction ReflectRay(Direction ray, Direction normal);
-    Direction RefractRay(Direction ray, Direction normal, float iof1, float iof2);
+    Direction ReflectRay(const Direction& ray, const Direction& normal);
+    Direction RefractRay(const Direction& ray, const Direction& normal, const float& iof1, const float& iof2, bool& total_internal_reflection);
 }
 
 #endif

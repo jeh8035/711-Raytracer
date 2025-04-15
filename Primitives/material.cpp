@@ -66,12 +66,13 @@ namespace Primitives {
             // Transmission ray
             Primitives::Direction refract_ray;
             Primitives::Point inner_intersection_point = intersection_point;
+            bool total_interal_reflection = false;
             if (intersection.is_inside) {
-                refract_ray = Primitives::RefractRay(ray.GetDirection(), -intersection.normal, index_of_refraction, 1.0f);
-                inner_intersection_point += (intersection.normal * World::GetEpsilon());
+                refract_ray = Primitives::RefractRay(ray.GetDirection(), -intersection.normal, index_of_refraction, 1.0f, total_interal_reflection);
+                inner_intersection_point += (intersection.normal * World::GetEpsilon()) * (total_interal_reflection ? -1.0 : 1.0);
             } else {
-                refract_ray = Primitives::RefractRay(ray.GetDirection(), intersection.normal, 1.0f, index_of_refraction);
-                inner_intersection_point -= (intersection.normal * World::GetEpsilon());
+                refract_ray = Primitives::RefractRay(ray.GetDirection(), intersection.normal, 1.0f, index_of_refraction, total_interal_reflection);
+                inner_intersection_point -= (intersection.normal * World::GetEpsilon()) * (total_interal_reflection ? -1.0 : 1.0);
             }
 
             Primitives::Ray trans_ray = Primitives::Ray(

@@ -13,23 +13,25 @@ namespace Primitives {
         direction{_direction}
     {}
 
-    Direction ReflectRay(Direction ray, Direction normal) {
+    Direction ReflectRay(const Direction& ray, const Direction& normal) {
         return ray - 2 * ((ray * normal) / normal.norm_squared()) * normal;
     }
 
-    Direction RefractRay(Direction ray, Direction normal, float iof1, float iof2) {
+    Direction RefractRay(const Direction& ray, const Direction& normal, const float& iof1, const float& iof2, bool& total_internal_reflection) {
         const float index_of_refraction = iof1/iof2;
 
-        const float cos_theta = -ray * normal;
+        const float cos_theta = (-normal) * ray;
         const float sin_2_theta = powf(index_of_refraction, 2.0f) * (1.0f - powf(cos_theta, 2.0f));
 
         const float inner_part = 1.0f - sin_2_theta;
 
         if (inner_part <= 0.0f) {
             // Total internal reflection
+            total_internal_reflection = true;
             return ReflectRay(ray, normal);
         }
 
+        total_internal_reflection = false;
         return index_of_refraction * ray + (index_of_refraction * cos_theta - sqrtf(inner_part)) * normal;
     }
 

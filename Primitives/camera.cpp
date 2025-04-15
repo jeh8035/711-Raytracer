@@ -18,7 +18,7 @@ namespace Primitives {
         algebra::Matrix4f rot_matrix = algebra::Matrix4f({
             std::cos(rot.y()) * std::cos(rot.z()), std::sin(rot.x()) * std::sin(rot.y()) * std::cos(rot.z()) - std::cos(rot.x()) * std::sin(rot.z()), std::cos(rot.x()) * std::sin(rot.y()) * std::cos(rot.z()) + std::sin(rot.x()) * std::sin(rot.z()), 0.0f,
             std::cos(rot.y()) * std::sin(rot.z()), std::sin(rot.x()) * std::sin(rot.y()) * std::sin(rot.z()) + std::cos(rot.x()) * std::cos(rot.z()), std::cos(rot.x()) * std::sin(rot.y()) * std::sin(rot.z()) - std::sin(rot.x()) * std::cos(rot.z()), 0.0f,
-            -std::sin(rot.y()),                     std::sin(rot.x()) * std::cos(rot.y()),                                                                 std::cos(rot.x()) * std::cos(rot.y()),                                                                0.0f,
+            -std::sin(rot.y()),                     std::sin(rot.x()) * std::cos(rot.y()),                                                                 std::cos(rot.x()) * std::cos(rot.y()),                                                        0.0f,
             0.0f, 0.0f, 0.0f, 1.0f
         });
 
