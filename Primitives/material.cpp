@@ -20,6 +20,10 @@ namespace Primitives {
         max_depth(_max_depth)
     {}
 
+    float PhongMaterial::GetTransparency() const {
+        return transmission_constant;
+    }
+
     Color PhongMaterial::GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth) const {
         if (depth >= max_depth) {
             return Color(0.0f, 0.0f, 0.0f);
@@ -40,10 +44,11 @@ namespace Primitives {
         const Primitives::IntersectionInfo light_intersection = World::CastRay(ray_to_light);
 
         // If shadow ray doesn't hit, calculate phong
-        if (!light_intersection.hit) {
+        if (!light_intersection.hit || (light_intersection.hit && light_intersection.material->GetTransparency() > 0.0f)) {
+            float transparency = light_intersection.hit ? light_intersection.material->GetTransparency() : 1.0;
             Primitives::Color diffuse = texture->GetColor(intersection.u, intersection.v) * phong_diffuse * World::GetLight().GetIntensity() * (dir_to_light * intersection.normal);
             Primitives::Color specular = specular_color * phong_specular * World::GetLight().GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), phong_exponent);
-            color = diffuse + specular;
+            color = (diffuse + specular) * transparency;
         }
 
         if (reflection_constant > 0.0f) {

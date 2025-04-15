@@ -150,9 +150,9 @@ void World::CreateObjects() {
         0.5f,
         0.5f,
         10.0f,
+        1.0f,
         0.0f,
         1.0f,
-        0.95f,
         5
     ));
 
@@ -162,9 +162,9 @@ void World::CreateObjects() {
         0.5f,
         0.5f,
         10.0f,
-        0.0f,
-        0.0f,
-        1.0f,
+        0.2f,
+        0.8f,
+        0.9f,
         10
     ));
 
@@ -200,11 +200,11 @@ void World::CreateObjects() {
     ));
 
     // Sphere 2
-    // objects.emplace_back( new Primitives::Sphere(
-    //     sphere2_mat,
-    //     0.5f,
-    //     Primitives::Point({1.0f, 2.4f, 1.5f})
-    // ));
+    objects.emplace_back( new Primitives::Sphere(
+        sphere2_mat,
+        0.5f,
+        Primitives::Point({1.0f, 2.4f, 1.5f})
+    ));
 
     // Floor
     objects.emplace_back( new Primitives::Triangle(
@@ -222,12 +222,12 @@ void World::CreateObjects() {
     ));
 
     // Cylinder
-    // objects.emplace_back( new Primitives::Cylinder(
-    //     cylinder_mat,
-    //     Primitives::Point({0.0f, 2.4f, 2.5f}),
-    //     Primitives::Point({0.2f, 0.4f, 3.6f}),
-    //     0.3f
-    // ));
+    objects.emplace_back( new Primitives::Cylinder(
+        cylinder_mat,
+        Primitives::Point({0.0f, 2.4f, 2.5f}),
+        Primitives::Point({0.2f, 0.4f, 3.6f}),
+        0.3f
+    ));
 
     // // Bunny model
 

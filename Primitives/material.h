@@ -17,6 +17,7 @@ namespace Primitives {
             Material(std::shared_ptr<Texture> texture);
 
             virtual Color GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth = 0) const = 0;
+            virtual float GetTransparency() const = 0; 
     };
 
     class PhongMaterial : public Material {
@@ -36,6 +37,7 @@ namespace Primitives {
             PhongMaterial(const std::shared_ptr<Texture> _texture, const Color& _specular_color, const float& _phong_diffuse, const float& _phong_specular, const float& _phong_exponent, const float& _reflection_constant, const float& _transmission_constant, const float& _index_of_refraction, const int& _max_depth);
 
             virtual Color GetColor(Primitives::Ray ray, Primitives::IntersectionInfo intersection, int depth = 0) const;
+            virtual float GetTransparency() const;
     };
 }
 
