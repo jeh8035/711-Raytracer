@@ -16,10 +16,16 @@ namespace Primitives {
     {}
 
     const Color TilingTexture::GetColor(const float& u, const float& v) const {
-        bool horizontal = static_cast<int>(floor(u / 0.1f)) % 2 == 0;
-        bool vertical = static_cast<int>(floor(v / 0.1f)) % 2 == 0;
+        const float mod_u = floor(u / 0.1f);
+        const float mod_v = floor(v / 0.1f);
+        const bool horizontal = static_cast<int>(mod_u) % 2 == 0;
+        const bool vertical = static_cast<int>(mod_v) % 2 == 0;
 
-        return (horizontal ^ vertical) ? color1 : color2;
+        // Psuedo-random number from https://thebookofshaders.com/10/
+        float rand = fmodf(sin(algebra::Vector2f({mod_u, mod_v}) * algebra::Vector2f({12.9898f,78.233f})) * 43758.5453123, 1.0f);
+        rand = std::max(rand, 0.5f);
+
+        return ((horizontal ^ vertical) ? color1 : color2) * rand;
     }
 
     ImageTexture::ImageTexture(const std::string& filename) {
