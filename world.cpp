@@ -143,9 +143,11 @@ void World::CreateObjects() {
         "images/texture1.bmp"
     ));
 
+    auto texture_mandlebrot = textures.emplace_back(new Primitives::MandelbrotTexture());
+
     // Materials
     auto sphere1_mat = materials.emplace_back(new Primitives::PhongMaterial(
-        texture_red,
+        texture_mandlebrot,
         Primitives::Color(1.0, 1.0, 1.0),
         0.5f,
         0.5f,

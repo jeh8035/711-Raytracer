@@ -1,5 +1,6 @@
 
 #include "texture.h"
+#include <complex>
 
 namespace Primitives {
     PlainTexture::PlainTexture(const Color& _color) :
@@ -38,5 +39,19 @@ namespace Primitives {
             img.green_at(static_cast<u_int32_t>(u * img.get_width()), static_cast<u_int32_t>(v * img.get_height())) / 255.0f,
             img.blue_at(static_cast<u_int32_t>(u * img.get_width()), static_cast<u_int32_t>(v * img.get_height())) / 255.0f
         );
+    }
+
+    const Color MandelbrotTexture::GetColor(const float& u, const float& v) const {
+        uint32_t count = 0;
+
+        std::complex c(u * 3.0f - 1.0f, v * 3.0f - 1.0f);
+        std::complex z(0.0f, 0.0f);
+
+        for (count = 0; count < 100; count++) {
+            z = z * z + c;
+            if (std::abs(z) > 2.0f) break;
+        }
+
+        return Color(count / 100.0f, count / 100.0f, count / 100.0f);
     }
 }

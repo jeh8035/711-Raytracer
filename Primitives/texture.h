@@ -48,6 +48,12 @@ namespace Primitives {
 
             virtual const Color GetColor(const float& u, const float& v) const;
     };
+
+    class MandelbrotTexture : public Texture {
+        public:
+            MandelbrotTexture(){};
+            virtual const Color GetColor(const float& u, const float& v) const;
+    };
 }
 
 #endif
