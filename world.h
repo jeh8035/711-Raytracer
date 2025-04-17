@@ -12,7 +12,7 @@ class World {
         static Primitives::Camera camera;
         
         static std::vector<std::shared_ptr<Primitives::Object>> objects;
-        static Primitives::Light light;
+        static std::vector<Primitives::Light> lights;
 
         static constexpr uint32_t width = 1280;
         static constexpr uint32_t height = 720;
@@ -31,7 +31,7 @@ class World {
         
         static Primitives::IntersectionInfo CastRay(const Primitives::Ray& ray);
 
-        static const Primitives::Light& GetLight() {return light;}
+        static const std::vector<Primitives::Light>& GetLights() {return lights;}
         static const float GetEpsilon() {return epsilon;}
 
     private:

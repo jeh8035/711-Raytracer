@@ -7,7 +7,7 @@
 
 Primitives::Camera World::camera;
 std::vector<std::shared_ptr<Primitives::Object>> World::objects;
-Primitives::Light World::light;
+std::vector<Primitives::Light> World::lights;
 constexpr uint32_t World::width;
 constexpr uint32_t World::height;
 constexpr float World::aspect_ratio;
@@ -275,10 +275,16 @@ void World::CreateObjects() {
     
 
     // Lights
-    light = Primitives::Light(
-        {-1.0f, 6.0f, -3.0f},
-        Primitives::Color(1.0f, 1.0f, 1.0f)
-    );
+    lights = {
+        Primitives::Light(
+            {-1.0f, 6.0f, -3.0f},
+            Primitives::Color(1.0f, 1.0f, 1.0f)
+        ),
+        Primitives::Light(
+            {4.0f, 6.0f, -3.0f},
+            Primitives::Color(1.0f, 1.0f, 1.0f)
+        )
+    };
 }
 
 void World::TransformObjectsToCameraSpace() {
@@ -286,5 +292,7 @@ void World::TransformObjectsToCameraSpace() {
     for (auto& object : objects) {
         object->Transform(camera.GetViewMatrix());
     }
-    light.Transform(camera.GetViewMatrix());
+    for (auto& light : lights) {
+        light.Transform(camera.GetViewMatrix());
+    }
 }
