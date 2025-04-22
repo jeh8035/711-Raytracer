@@ -47,8 +47,9 @@ namespace Primitives {
             const Primitives::IntersectionInfo light_intersection = World::CastRay(ray_to_light);
 
             // If shadow ray doesn't hit, calculate phong
-            if (!light_intersection.hit || (light_intersection.hit && light_intersection.material->GetTransparency() > 0.0f)) {
-                float transparency = light_intersection.hit ? light_intersection.material->GetTransparency() : 1.0;
+            //if (!light_intersection.hit || (light_intersection.hit && light_intersection.material->GetTransparency() > 0.0f)) {
+            if (!light_intersection.hit) {
+                float transparency = 1.0f;// light_intersection.hit ? light_intersection.material->GetTransparency() : 1.0;
                 Primitives::Color diffuse = texture->GetColor(intersection.u, intersection.v) * phong_diffuse * light.GetIntensity() * (dir_to_light * intersection.normal);
                 Primitives::Color specular = specular_color * phong_specular * light.GetIntensity() * pow( Primitives::ReflectRay(ray_to_light.GetDirection(), intersection.normal ) * -ray.GetDirection(), phong_exponent);
                 color += (diffuse + specular) * transparency;
