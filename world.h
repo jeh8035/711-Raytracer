@@ -34,6 +34,9 @@ class World {
         static const std::vector<Primitives::Light>& GetLights() {return lights;}
         static const float GetEpsilon() {return epsilon;}
 
+
+        static const Primitives::Color GetBackgroundColor() { return Primitives::Color(0, 100, 100); }
+
     private:
         static void CreateObjects();
         static void TransformObjectsToCameraSpace();

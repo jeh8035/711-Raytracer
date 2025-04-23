@@ -54,6 +54,8 @@ void World::SingleTrace(u_int32_t y) {
             if (intersection.hit) {
                 Primitives::Color color = intersection.material->GetColor(ray, intersection);
                 irradiances[x][y] += color * (1.0f/supersample_amount);
+            } else {
+                irradiances[x][y] = World::GetBackgroundColor();
             }
         }
     }
@@ -109,9 +111,9 @@ void World::RayTrace() {
 
             img.set_pixel(
                 x, height - 1 - y,
-                static_cast<uint8_t>(sf * irradiance_r / ld_max * 255.0f),
-                static_cast<uint8_t>(sf * irradiance_g / ld_max * 255.0f),
-                static_cast<uint8_t>(sf * irradiance_b / ld_max * 255.0f)
+                static_cast<uint8_t>(std::min(255.0f, sf * irradiance_r / ld_max * 255.0f)),
+                static_cast<uint8_t>(std::min(255.0f, sf * irradiance_g / ld_max * 255.0f)),
+                static_cast<uint8_t>(std::min(255.0f, sf * irradiance_b / ld_max * 255.0f))
                 // static_cast<uint8_t>(std::min(irradiances[x][y].red * irradiance_multiplier, 255.0f)),
                 // static_cast<uint8_t>(std::min(irradiances[x][y].green * irradiance_multiplier, 255.0f)),
                 // static_cast<uint8_t>(std::min(irradiances[x][y].blue * irradiance_multiplier, 255.0f))
