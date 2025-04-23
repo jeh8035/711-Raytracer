@@ -1,3 +1,6 @@
+#ifndef WORLD_H
+#define WORLD_H
+
 #include "Libraries/matrix/matrix.h"
 
 #include "Primitives/object.h"
@@ -32,7 +35,9 @@ class World {
         static Primitives::IntersectionInfo CastRay(const Primitives::Ray& ray);
 
         static const std::vector<Primitives::Light>& GetLights() {return lights;}
-        static const float GetEpsilon() {return epsilon;}
+        static const float& GetEpsilon() {return epsilon;}
+        static const uint32_t& GetWidth() {return width;}
+        static const uint32_t& GetHeight() {return height;}
 
 
         static const Primitives::Color GetBackgroundColor() { return Primitives::Color(0, 100, 100); }
@@ -42,4 +47,7 @@ class World {
         static void TransformObjectsToCameraSpace();
 
         static void SingleTrace(u_int32_t y);
+
 };
+
+#endif

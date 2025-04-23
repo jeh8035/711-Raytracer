@@ -1,4 +1,5 @@
 #include "world.h"
+#include "tonemapper.h"
 #include "Primitives/material.h"
 #include "Primitives/intersection_info.h"
 #include "Libraries/libbmp/libbmp.h"
@@ -81,46 +82,24 @@ void World::RayTrace() {
         thread.join();
     }
 
+    {
+        const float key_value = Tonemapper::CalculateLogAverage(irradiances);
+        const ReinhardTonemapping tonemapper = ReinhardTonemapping(300.0f, key_value);
+        tonemapper.Tonemap(irradiances);
+    }
 
     // Create image
     BmpImg img(width, height);
-
-    // Tone mapping
-    float log_average = 0.0f;
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
-            const float luminance = 0.27f * irradiances[x][y].red + 0.67f * irradiances[x][y].green + 0.06f * irradiances[x][y].blue;
-
-            log_average += std::logf(std::max(luminance, 1.0f));
-        }
-    }
-    log_average = expf(log_average / (width * height));
-
-    const float ld_max = 300.0f;
-
-    for (uint32_t y = 0; y < height; y++) {
-        for (uint32_t x = 0; x < width; x++) {
-
-            const float& irradiance_r = irradiances[x][y].red;
-            const float& irradiance_g = irradiances[x][y].green;
-            const float& irradiance_b = irradiances[x][y].blue;
-
-            // const float luminance = 0.27f * irradiance_r + 0.67f * irradiance_g + 0.06f * irradiance_b;
-
-            const float sf = pow((1.219f + powf(ld_max / 2.0f, 0.4f)) / (1.219f + pow(log_average, 0.4f)), 2.5f);
-
             img.set_pixel(
                 x, height - 1 - y,
-                static_cast<uint8_t>(std::min(255.0f, sf * irradiance_r / ld_max * 255.0f)),
-                static_cast<uint8_t>(std::min(255.0f, sf * irradiance_g / ld_max * 255.0f)),
-                static_cast<uint8_t>(std::min(255.0f, sf * irradiance_b / ld_max * 255.0f))
-                // static_cast<uint8_t>(std::min(irradiances[x][y].red * irradiance_multiplier, 255.0f)),
-                // static_cast<uint8_t>(std::min(irradiances[x][y].green * irradiance_multiplier, 255.0f)),
-                // static_cast<uint8_t>(std::min(irradiances[x][y].blue * irradiance_multiplier, 255.0f))
+                static_cast<uint8_t>(std::min(255.0f, irradiances[x][y].red * 255.0f)),
+                static_cast<uint8_t>(std::min(255.0f, irradiances[x][y].green * 255.0f)),
+                static_cast<uint8_t>(std::min(255.0f, irradiances[x][y].blue * 255.0f))
             );
         }
     }
-
     img.write("out.bmp");
 }
 
@@ -303,7 +282,7 @@ void World::CreateObjects() {
     lights = {
         Primitives::Light(
             {-1.0f, 6.0f, -3.0f},
-            Primitives::Color(100.0f, 100.0f, 100.0f)
+            Primitives::Color(20.0f, 20.0f, 20.0f)
         ),
         Primitives::Light(
             {4.0f, 6.0f, -3.0f},
