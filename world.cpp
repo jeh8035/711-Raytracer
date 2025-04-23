@@ -82,9 +82,28 @@ void World::RayTrace() {
         thread.join();
     }
 
+    // {
+    //     // Reinhardt
+    //     const float key_value = Tonemapper::CalculateLogAverage(irradiances);
+    //     const ReinhardTonemapping tonemapper = ReinhardTonemapping(300.0f, key_value);
+    //     tonemapper.Tonemap(irradiances);
+    // }
+    // {
+    //     // Reinhardt (using center as key value)
+    //     const float key_value = Tonemapper::GetLuminance(irradiances[width/2u][height/2u].red, irradiances[width/2u][height/2u].green, irradiances[width/2u][height/2u].blue);
+    //     const ReinhardTonemapping tonemapper = ReinhardTonemapping(300.0f, key_value);
+    //     tonemapper.Tonemap(irradiances);
+    // }
+    // {
+    //     // Ward
+    //     const float adaptation_luminance = Tonemapper::CalculateLogAverage(irradiances);
+    //     const WardTonemapping tonemapper = WardTonemapping(300.0f, adaptation_luminance);
+    //     tonemapper.Tonemap(irradiances);
+    // }
     {
-        const float key_value = Tonemapper::CalculateLogAverage(irradiances);
-        const ReinhardTonemapping tonemapper = ReinhardTonemapping(300.0f, key_value);
+        // Ward (using center as adaptation luminance)
+        const float adaptation_luminance = Tonemapper::GetLuminance(irradiances[width/2u][height/2u].red, irradiances[width/2u][height/2u].green, irradiances[width/2u][height/2u].blue);
+        const WardTonemapping tonemapper = WardTonemapping(300.0f, adaptation_luminance);
         tonemapper.Tonemap(irradiances);
     }
 
@@ -282,7 +301,7 @@ void World::CreateObjects() {
     lights = {
         Primitives::Light(
             {-1.0f, 6.0f, -3.0f},
-            Primitives::Color(20.0f, 20.0f, 20.0f)
+            Primitives::Color(1000.0f, 1000.0f, 1000.0f)
         ),
         Primitives::Light(
             {4.0f, 6.0f, -3.0f},

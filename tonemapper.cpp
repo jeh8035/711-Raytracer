@@ -10,7 +10,7 @@ float Tonemapper::CalculateLogAverage(const std::vector<std::vector<Primitives::
     for (uint32_t y = 0; y < World::GetHeight(); y++) {
         for (uint32_t x = 0; x < World::GetWidth(); x++) {
             const float luminance = Tonemapper::GetLuminance(irradiances[x][y].red, irradiances[x][y].green, irradiances[x][y].blue);
-            log_average += std::logf(std::max(luminance, 1.0f));
+            log_average += std::log(std::max(luminance, 1.0f));
         }
     }
     log_average = expf(log_average / (World::GetWidth() * World::GetHeight()));
@@ -18,13 +18,12 @@ float Tonemapper::CalculateLogAverage(const std::vector<std::vector<Primitives::
     return log_average;
 }
 
-WardTonemapping::WardTonemapping(float _ld_max) :
-    ld_max(_ld_max)
+WardTonemapping::WardTonemapping(float _ld_max, float _adaptation_luminance) :
+    ld_max(_ld_max),
+    adaptation_luminance(_adaptation_luminance)
 {}
 
 void WardTonemapping::Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const {
-    float log_average = CalculateLogAverage(irradiances);
-
     for (uint32_t y = 0; y < World::GetHeight(); y++) {
         for (uint32_t x = 0; x < World::GetWidth(); x++) {
 
@@ -32,7 +31,7 @@ void WardTonemapping::Tonemap(std::vector<std::vector<Primitives::Color>>& irrad
             const float& irradiance_g = irradiances[x][y].green;
             const float& irradiance_b = irradiances[x][y].blue;
 
-            const float sf = pow((1.219f + powf(ld_max / 2.0f, 0.4f)) / (1.219f + pow(log_average, 0.4f)), 2.5f);
+            const float sf = pow((1.219f + powf(ld_max / 2.0f, 0.4f)) / (1.219f + pow(adaptation_luminance, 0.4f)), 2.5f);
 
             irradiances[x][y].red = std::min(1.0f, sf * irradiance_r / ld_max);
             irradiances[x][y].green = std::min(1.0f, sf * irradiance_g / ld_max);

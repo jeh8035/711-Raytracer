@@ -15,9 +15,10 @@ class Tonemapper {
 class WardTonemapping : Tonemapper {
     private:
         float ld_max;
+        float adaptation_luminance;
 
     public:
-        WardTonemapping(float _ld_max);
+        WardTonemapping(float _ld_max, float _adaptation_luminance);
         virtual void Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const;
 };
 
