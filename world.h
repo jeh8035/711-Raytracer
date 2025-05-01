@@ -17,8 +17,8 @@ class World {
         static std::vector<std::shared_ptr<Primitives::Object>> objects;
         static std::vector<Primitives::Light> lights;
 
-        static constexpr uint32_t width = 1280;
-        static constexpr uint32_t height = 720;
+        static constexpr uint32_t width = 1920;
+        static constexpr uint32_t height = 1080;
         static constexpr float aspect_ratio = static_cast<float>(height)/static_cast<float>(width);
         static constexpr uint32_t supersample_amount = 5;
 

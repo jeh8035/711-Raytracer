@@ -18,12 +18,12 @@ float Tonemapper::CalculateLogAverage(const std::vector<std::vector<Primitives::
     return log_average;
 }
 
-WardTonemapping::WardTonemapping(float _ld_max, float _adaptation_luminance) :
+WardTonemapper::WardTonemapper(float _ld_max, float _adaptation_luminance) :
     ld_max(_ld_max),
     adaptation_luminance(_adaptation_luminance)
 {}
 
-void WardTonemapping::Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const {
+void WardTonemapper::Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const {
     for (uint32_t y = 0; y < World::GetHeight(); y++) {
         for (uint32_t x = 0; x < World::GetWidth(); x++) {
 
@@ -31,7 +31,7 @@ void WardTonemapping::Tonemap(std::vector<std::vector<Primitives::Color>>& irrad
             const float& irradiance_g = irradiances[x][y].green;
             const float& irradiance_b = irradiances[x][y].blue;
 
-            const float sf = pow((1.219f + powf(ld_max / 2.0f, 0.4f)) / (1.219f + pow(adaptation_luminance, 0.4f)), 2.5f);
+            const float sf = pow((1.219f + pow(ld_max / 2.0f, 0.4f)) / (1.219f + pow(adaptation_luminance, 0.4f)), 2.5f);
 
             irradiances[x][y].red = std::min(1.0f, sf * irradiance_r / ld_max);
             irradiances[x][y].green = std::min(1.0f, sf * irradiance_g / ld_max);
@@ -40,12 +40,12 @@ void WardTonemapping::Tonemap(std::vector<std::vector<Primitives::Color>>& irrad
     }
 }
 
-ReinhardTonemapping::ReinhardTonemapping(float _ld_max, float _key_value) :
+ReinhardTonemapper::ReinhardTonemapper(float _ld_max, float _key_value) :
     ld_max(_ld_max),
     key_value(_key_value)
 {}
 
-void ReinhardTonemapping::Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const {
+void ReinhardTonemapper::Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const {
     for (uint32_t y = 0; y < World::GetHeight(); y++) {
         for (uint32_t x = 0; x < World::GetWidth(); x++) {
 
@@ -59,9 +59,45 @@ void ReinhardTonemapping::Tonemap(std::vector<std::vector<Primitives::Color>>& i
             const float b_reflectance = b_scaled / (1 + b_scaled);
 
 
-            irradiances[x][y].red = std::min(1.0f, r_reflectance * ld_max / ld_max);
-            irradiances[x][y].green = std::min(1.0f, g_reflectance * ld_max / ld_max);
-            irradiances[x][y].blue = std::min(1.0f, b_reflectance * ld_max / ld_max);
+            irradiances[x][y].red = std::min(1.0f, r_reflectance);
+            irradiances[x][y].green = std::min(1.0f, g_reflectance);
+            irradiances[x][y].blue = std::min(1.0f, b_reflectance);
         }
     }
+}
+
+AdaptiveLogTonemapper::AdaptiveLogTonemapper(float _ld_max, float _bias, float _adaption_luminance) :
+    ld_max(_ld_max),
+    bias(_bias),
+    adaptation_luminance(_adaption_luminance)
+{}
+
+void AdaptiveLogTonemapper::Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const {
+    
+    // Lwmax
+    float max_luminance = 0.0;
+    for (uint32_t y = 0; y < World::GetHeight(); y++) {
+        for (uint32_t x = 0; x < World::GetWidth(); x++) {
+            max_luminance = std::max(max_luminance, Tonemapper::GetLuminance(irradiances[x][y].red, irradiances[x][y].green, irradiances[x][y].blue));
+        }
+    }
+
+    max_luminance /= adaptation_luminance;
+
+    for (uint32_t y = 0; y < World::GetHeight(); y++) {
+        for (uint32_t x = 0; x < World::GetWidth(); x++) {
+            //Lw
+            const float luminance = Tonemapper::GetLuminance(irradiances[x][y].red, irradiances[x][y].green, irradiances[x][y].blue) / adaptation_luminance;
+
+            const float final_luminance = (log(luminance + 1.0f) / log(2.0f + (BiasFunction(luminance/max_luminance) * 8.0f))) / log10(max_luminance + 1.0f);
+
+            irradiances[x][y].red = std::min(1.0f, final_luminance * irradiances[x][y].red / ld_max);
+            irradiances[x][y].green = std::min(1.0f, final_luminance * irradiances[x][y].green / ld_max);
+            irradiances[x][y].blue = std::min(1.0f, final_luminance * irradiances[x][y].blue / ld_max);
+        }
+    }
+}
+
+float AdaptiveLogTonemapper::BiasFunction(const float& t) const {
+    return pow(t, log(bias) / log(0.5));
 }

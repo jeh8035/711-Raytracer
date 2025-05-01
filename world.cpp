@@ -85,27 +85,33 @@ void World::RayTrace() {
     // {
     //     // Reinhardt
     //     const float key_value = Tonemapper::CalculateLogAverage(irradiances);
-    //     const ReinhardTonemapping tonemapper = ReinhardTonemapping(300.0f, key_value);
+    //     const ReinhardTonemapper tonemapper = ReinhardTonemapper(300.0f, key_value);
     //     tonemapper.Tonemap(irradiances);
     // }
     // {
     //     // Reinhardt (using center as key value)
     //     const float key_value = Tonemapper::GetLuminance(irradiances[width/2u][height/2u].red, irradiances[width/2u][height/2u].green, irradiances[width/2u][height/2u].blue);
-    //     const ReinhardTonemapping tonemapper = ReinhardTonemapping(300.0f, key_value);
-    //     tonemapper.Tonemap(irradiances);
-    // }
-    // {
-    //     // Ward
-    //     const float adaptation_luminance = Tonemapper::CalculateLogAverage(irradiances);
-    //     const WardTonemapping tonemapper = WardTonemapping(300.0f, adaptation_luminance);
+    //     const ReinhardTonemapper tonemapper = ReinhardTonemapper(300.0f, key_value);
     //     tonemapper.Tonemap(irradiances);
     // }
     {
-        // Ward (using center as adaptation luminance)
-        const float adaptation_luminance = Tonemapper::GetLuminance(irradiances[width/2u][height/2u].red, irradiances[width/2u][height/2u].green, irradiances[width/2u][height/2u].blue);
-        const WardTonemapping tonemapper = WardTonemapping(300.0f, adaptation_luminance);
+        // Ward
+        const float adaptation_luminance = Tonemapper::CalculateLogAverage(irradiances);
+        const WardTonemapper tonemapper = WardTonemapper(300.0f, adaptation_luminance);
         tonemapper.Tonemap(irradiances);
     }
+    // {
+    //     // Ward (using center as adaptation luminance)
+    //     const float adaptation_luminance = Tonemapper::GetLuminance(irradiances[width/2u][height/2u].red, irradiances[width/2u][height/2u].green, irradiances[width/2u][height/2u].blue);
+    //     const WardTonemapper tonemapper = WardTonemapper(300.0f, adaptation_luminance);
+    //     tonemapper.Tonemap(irradiances);
+    // }
+    // {
+    //     // Adaptive Log
+    //     const float adaptation_luminance = Tonemapper::CalculateLogAverage(irradiances);
+    //     const AdaptiveLogTonemapper tonemapper = AdaptiveLogTonemapper(300.0f, 0.85f, adaptation_luminance);
+    //     tonemapper.Tonemap(irradiances);
+    // }
 
     // Create image
     BmpImg img(width, height);

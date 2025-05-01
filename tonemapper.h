@@ -12,24 +12,39 @@ class Tonemapper {
         static float CalculateLogAverage(const std::vector<std::vector<Primitives::Color>>& irradiances);
 };
 
-class WardTonemapping : Tonemapper {
+class WardTonemapper : Tonemapper {
     private:
         float ld_max;
         float adaptation_luminance;
 
     public:
-        WardTonemapping(float _ld_max, float _adaptation_luminance);
+        WardTonemapper(float _ld_max, float _adaptation_luminance);
         virtual void Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const;
 };
 
-class ReinhardTonemapping : Tonemapper {
+class ReinhardTonemapper : Tonemapper {
     private:
         float ld_max;
         float key_value;
 
     public:
-        ReinhardTonemapping(float _ld_max, float _key_value);
+        ReinhardTonemapper(float _ld_max, float _key_value);
         virtual void Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const;
 };
+
+class AdaptiveLogTonemapper : Tonemapper {
+    private:
+        float ld_max;
+        float bias;
+        float adaptation_luminance;
+
+    public:
+        AdaptiveLogTonemapper(float _ld_max, float _bias, float _adaptation_luminance);
+        virtual void Tonemap(std::vector<std::vector<Primitives::Color>>& irradiances) const;
+
+    private:
+        float BiasFunction(const float& t) const;
+};
+
 
 #endif
